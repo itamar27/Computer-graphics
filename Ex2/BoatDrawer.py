@@ -111,7 +111,9 @@ def drawCurves(curves):
 
 def readCoordinates():
     '''
-    creating all the coordinates after reading them from file
+    Getting Cordinates from the file input,
+    then scaling the vectors to our window size,
+    then painting the data to the window.
     '''
     lines, radiuses, curves = selectFile()
 
