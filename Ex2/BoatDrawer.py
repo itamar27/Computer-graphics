@@ -31,6 +31,9 @@ def createCoordinates(string):
 def scaleInputToScreen(lines, radiuses, curves):
     '''
     Getting a vector representation of a painting, then scales it to the actual board size.
+    The method is to normalize the vectors and then scale them to the actual window size, for that
+    we are finding the maxHeight/maxWidth of the painting in the input vectors and using the actual window
+    width and height to scale.
     '''
     maxWidth = 0
     maxHeight = 0
@@ -59,6 +62,9 @@ def scaleInputToScreen(lines, radiuses, curves):
     newLines = []
     newRadiuses = []
     newCurves = []
+
+    # Normalizing the vectors by dividing them with the width/height of the max values found in the vectors, 
+    # then scaling them by multiplying with the actual window width/height. (width-200 is regarding to the part of the window we paint on)
 
     for line in lines:
         x1, y1, x2, y2 = createCoordinates(line)
