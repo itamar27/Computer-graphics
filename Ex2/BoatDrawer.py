@@ -123,6 +123,26 @@ def readCoordinates():
     drawRadiuses(radiuses)
     drawCurves(curves)
 
+# function to open a new window 
+# on a button click
+def openNewWindow():
+      
+    # Toplevel object which will 
+    # be treated as a new window
+    newWindow = Toplevel(window)
+  
+    newWindow.title("Enter params")
+  
+    # sets the geometry of toplevel
+    newWindow.geometry("400x200")
+  
+    # A Label widget to show in toplevel
+    Label(newWindow, 
+          text ="Enter params:").pack()
+
+    confirmBtn = Button(newWindow, text="Confirm", command=lambda: print("Confirm"),
+                     height=2, width=10, bg='SkyBlue4', fg='white', font=helv36).pack(side=BOTTOM, pady=15)
+
 
 def setUpGraphicalEnv():
     '''
@@ -131,7 +151,7 @@ def setUpGraphicalEnv():
     # creating UI elements
     fileBtn = Button(window, text="Insert file", command=readCoordinates,
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
-    translateBtn = Button(window, text="Translate painting", command= lambda: print("translate command"),
+    translateBtn = Button(window, text="Translate painting", command=openNewWindow,
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
     scaleBtn = Button(window, text="Scale painting", command= lambda: print("scale command"),
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
