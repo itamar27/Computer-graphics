@@ -14,6 +14,11 @@ window.geometry('{}x{}'.format(width, height))
 window.title('Exercise 2')
 window.configure(background='SkyBlue1')
 canvas = Canvas(window, width=width-200, height=height, bg="white")
+currLines = []
+currRadiuses = []
+currCurves = []
+xMax = 0
+yMax = 0
 
 # define font
 helv36 = tkFont.Font(family='Helvetica', size=10, weight='bold')
@@ -78,6 +83,13 @@ def scaleInputToScreen(lines, radiuses, curves):
         x1, y1, x2, y2, x3, y3, x4, y4 = createCoordinates(curve)
         newCurves.append([int(x1)/maxWidth*(width-200), int(y1)/maxHeight*height, int(x2)/maxWidth*(width-200), int(y2)/maxHeight*height, int(x3)/maxWidth*(width-200), int(y3)/maxHeight*height, int(x4)/maxWidth*(width-200), int(y4)/maxHeight*height])
         
+    global xMax, yMax, currLines, currRadiuses, currCurves
+    xMax = maxWidth
+    yMax = maxHeight 
+    currLines = newLines
+    currRadiuses = newRadiuses
+    currCurves = newCurves
+
     return newLines, newRadiuses, newCurves
 
 def drawLines(lines):
@@ -122,6 +134,40 @@ def readCoordinates():
     drawLines(lines)
     drawRadiuses(radiuses)
     drawCurves(curves)
+    
+
+def scaleCanvas(newscale=0.5):
+    '''
+    Scales the canvas paiting by a given scale, defualt is 0.5
+    '''
+    global currLines, currRadiuses, currCurves
+
+    for i in range(len(currLines)):
+        for j in range(len(currLines[i])):
+            currLines[i][j] = newscale * currLines[i][j]
+
+    for i in range(len(currRadiuses)):
+        for j in range(len(currRadiuses[i])):
+            currRadiuses[i][j] = newscale * currRadiuses[i][j]
+
+    for i in range(len(currCurves)):
+        for j in range(len(currCurves[i])):
+            currCurves[i][j] = newscale * currCurves[i][j]
+
+
+    canvas.delete("all")
+    drawLines(currLines)
+    drawRadiuses(currRadiuses)
+    drawCurves(currCurves)
+
+def scaleTranform(newScale, newWindow):
+    '''
+    Transformation for scaling
+    '''
+    scaleCanvas(float(newScale.get()))
+    newWindow.destroy()
+
+
 
 # function to open a new window 
 # on a button click
@@ -131,17 +177,23 @@ def openNewWindow():
     # be treated as a new window
     newWindow = Toplevel(window)
   
-    newWindow.title("Enter params")
+    newWindow.title("Enter scale")
   
     # sets the geometry of toplevel
     newWindow.geometry("400x200")
   
     # A Label widget to show in toplevel
     Label(newWindow, 
-          text ="Enter params:").pack()
+          text ="Enter the new scale:").pack()
 
-    confirmBtn = Button(newWindow, text="Confirm", command=lambda: print("Confirm"),
+    newScale = Entry(newWindow)
+    newScale.pack()
+
+    #Packing a button to the new window
+    Button(newWindow, text="Confirm", command= lambda: scaleTranform(newScale, newWindow),
                      height=2, width=10, bg='SkyBlue4', fg='white', font=helv36).pack(side=BOTTOM, pady=15)
+
+    
 
 
 def setUpGraphicalEnv():
@@ -151,9 +203,9 @@ def setUpGraphicalEnv():
     # creating UI elements
     fileBtn = Button(window, text="Insert file", command=readCoordinates,
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
-    translateBtn = Button(window, text="Translate painting", command=openNewWindow,
+    translateBtn = Button(window, text="Translate painting", command= lambda: print("translate command"),
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
-    scaleBtn = Button(window, text="Scale painting", command= lambda: print("scale command"),
+    scaleBtn = Button(window, text="Scale painting", command= openNewWindow,
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
     rotateBtn = Button(window, text="Rotate painting", command= lambda: print("rotate command"),
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
