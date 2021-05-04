@@ -131,13 +131,27 @@ def setUpGraphicalEnv():
     # creating UI elements
     fileBtn = Button(window, text="Insert file", command=readCoordinates,
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
-
+    translateBtn = Button(window, text="Translate painting", command= lambda: print("translate command"),
+                     height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
+    scaleBtn = Button(window, text="Scale painting", command= lambda: print("scale command"),
+                     height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
+    rotateBtn = Button(window, text="Rotate painting", command= lambda: print("rotate command"),
+                     height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
+    reflectBtn = Button(window, text="Reflect painting", command= lambda: print("reflect command"),
+                     height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
+    shearBtn = Button(window, text="Shearing painting", command= lambda: print("shear command"),
+                     height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
     clearBtn = Button(window, text="Clear Screen", command= lambda: clearCanvas(canvas),
                      height=8, width=50, bg='SkyBlue4', fg='white', font=helv36)
 
     # packing all window elements
     canvas.pack(side=RIGHT)
     fileBtn.pack(side=TOP)
+    translateBtn.pack(side=TOP) 
+    scaleBtn.pack(side=TOP)   
+    rotateBtn.pack(side=TOP)
+    reflectBtn.pack(side=TOP)
+    shearBtn.pack(side=TOP)
     clearBtn.pack(side=TOP)
 
 # Main
