@@ -85,7 +85,8 @@ def scaleInputToScreen(lines, radiuses, curves):
         
     global xMax, yMax, currLines, currRadiuses, currCurves
     xMax = maxWidth
-    yMax = maxHeight 
+    yMax = maxHeight
+
     currLines = newLines
     currRadiuses = newRadiuses
     currCurves = newCurves
@@ -154,7 +155,6 @@ def scaleCanvas(newscale=0.5):
         for j in range(len(currCurves[i])):
             currCurves[i][j] = newscale * currCurves[i][j]
 
-
     canvas.delete("all")
     drawLines(currLines)
     drawRadiuses(currRadiuses)
@@ -166,7 +166,6 @@ def scaleTranform(newScale, newWindow):
     '''
     scaleCanvas(float(newScale.get()))
     newWindow.destroy()
-
 
 
 # function to open a new window 
