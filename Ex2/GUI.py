@@ -2,11 +2,11 @@
 from tkinter import *
 from tkinter import font as tkFont
 from Canvas_painter import *
-from FileManager import *
+from fileManager import *
 
 # Tkinter global values
 width = 1080
-height = 900
+height = 500
 window = Tk()
 window.geometry('{}x{}'.format(width, height))
 window.title('Exercise 2')
@@ -14,8 +14,9 @@ canvas = Canvas(window, width=width, height=0.87*height, bg='#ffffff')
 
 # Global environment variables
 mode = "None"
-points = []
+points = [[0,0], [0,0], [0,0], [0,0]]
 clicks = 0
+point_index = 0
 
 
 # FUNCTIONS
@@ -48,7 +49,7 @@ def setUpGraphicalEnv():
     mirror_button = Button(button_frame, text="Mirror",
                            width=16, command=lambda: set_mirror(mode_label, help_label))
     rotate_button = Button(button_frame, text="Rotate",
-                           width=16, command=set_rotate)
+                           width=16, command=lambda: set_rotate(mode_label, help_label))
 
     # Packing up UI environment
     help_label.pack()
@@ -64,7 +65,7 @@ def setUpGraphicalEnv():
 
     # Defining canvas click functionality
     canvas.bind("<Button-1>", mouse_click)
-
+    canvas.pack()
     # Run app gui
     window.mainloop()
 
@@ -82,24 +83,26 @@ def customizeWindow():
 
 
 def mouse_click(event):
-    global clicks, points
-
-    if(clicks < 2):
-        points.append([event.x, event.y])
-        clicks += 1
+    global point_index, points, mode
+    points[point_index] = [event.x, event.y]
+    point_index += 1
+    #starts drawing, based on points num and mode
+    if( mode == "mirror" and point_index == 1):
+        point_index = 0
+        draw()
+    elif (mode == "rotate" and point_index == 3):
+        point_index = 0
+        draw()
+    elif (point_index > 1 and mode != "curve" and mode != "rotate") or (point_index > 3 and mode == "curve"):
+        point_index = 0
+        draw()
 
 
 def set_shearing():
     global mode
     mode = "shearing"
-    init_draw()
+    # init_draw()
 
-
-def set_rotate():
-    global mode
-    mode = "rotate"
-    help_text['text'] = "Click on 3 points on the screen to make a line. The first line is the origin, and the other 2 decide the angle"
-    init_draw()
 
 
 def setText(mode_label, help_label, mode, help):
@@ -204,9 +207,39 @@ def scaleTranform(newScale, newWindow):
 ###      Translation        ###
 ###############################
 def set_trans(mode_label, help_label):
+    global canvas,points,mode
     # prepare text
+    mode = 'translation'
     help = "Click on 2 points on the screen to make the drawing in the direction and distance"
     setText(mode_label, help_label, "Translation", help)
 
-    # Do the translation
+###############################
+###      Rotate        ###
+###############################
+def set_rotate(help_label,mode_label):
+    global mode
+    init_draw()
+    help = "Click on 3 points on the screen to make a line. The first line is the origin, and the other 2 decide the angle"
+    setText(mode_label, help_label, "Rotate", help)
+    mode = "rotate"
     print(points)
+    # rotateTranform ()
+
+def rotateTranform():
+    '''
+    Transformation for rotate
+    '''
+    print(points)
+    rotatePainting(points,canvas)
+
+
+## draw all transformations and send to them mouse clicks
+
+def draw():
+    global mode
+
+    if mode == 'rotate':
+        rotatePainting(points,canvas)
+    elif mode == 'translation':
+        translationPainting(points[0], points[1],canvas)
+

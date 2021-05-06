@@ -1,9 +1,10 @@
 # imports
 from tkinter import *
 from tkinter import font as tkFont
-from FileManager import *
+from fileManager import *
 import math as math
 import re
+import numpy as np
 
 # Globals
 currLines = []
@@ -11,6 +12,7 @@ currRadiuses = []
 currCurves = []
 xMax = 0
 yMax = 0
+
 
 
 # functions
@@ -243,8 +245,16 @@ def scaleInputToScreen(lines, radiuses, curves, width, height):
     xMax = maxWidth
     yMax = maxHeight
 
+    newLines = np.array(newLines)
+    newLines = newLines.astype(int)
     currLines = newLines
+
+    newRadiuses = np.array(newRadiuses)
+    newRadiuses = newRadiuses.astype(int)
     currRadiuses = newRadiuses
+
+    newCurves = np.array(newCurves)
+    newCurves = newCurves.astype(int)
     currCurves = newCurves
 
     return newLines, newRadiuses, newCurves
@@ -260,6 +270,11 @@ def createCoordinates(string):
 
 
 ### Linear Transformation implementation
+#initilize drawing
+def init_draw():
+    global point_index
+    point_index = 0
+
 def scalePainting(canvas, newscale=0.5):
     '''
     Scales the canvas painting by a given scale, default is 0.5
@@ -290,3 +305,123 @@ def scalePainting(canvas, newscale=0.5):
 
 def mirrorPainting():
     print("hello world")
+
+### Rotation
+
+def rotatePaintingPoint(rot_point,angle):
+    rotateMetrix = [[np.cos(angle),np.sin(angle),0],
+                    [(-(np.sin(angle))),np.cos(angle),0],
+                    [0,0,1]]
+    mulMetrix = np.dot([rot_point[0],rot_point[1],1],rotateMetrix)
+    return mulMetrix
+
+def rotatePainting(points,canvas):
+    global currLines,currRadiuses,currCurves
+    a = np.array(points[0])
+    b = np.array(points[1])
+    c = np.array(points[2])
+    #calculate the angle
+    ba = b-a
+    ca = c-a
+
+    cosine_angle = np.dot(ba , ca) / (np.linalg.norm(ba) * np.linalg.norm(ca))
+    angle = np.arccos(cosine_angle)
+    x = list()
+    j=0
+
+    # multiply each vector with the matrix
+    for i in currLines:
+        point = rotatePaintingPoint(i,angle)
+        x.insert(j,point)
+        j += 1
+
+    for i in range(len(currLines)):
+        for j in range(len(currLines[i])):
+            currLines[i][j] = point * currLines[i][j]
+
+    for i in range(len(currRadiuses)):
+        for j in range(len(currRadiuses[i])):
+            currRadiuses[i][j] = point * currRadiuses[i][j]
+
+    for i in range(len(currCurves)):
+        for j in range(len(currCurves[i])):
+            currCurves[i][j] = point * currCurves[i][j]
+
+    # clear the canvas before painting the new scaled painting
+    canvas.delete("all")
+
+    # draw the painting after scaling it to device proportions
+    drawLines(currLines, canvas)
+    drawRadiuses(currRadiuses, canvas)
+    drawCurves(currCurves, canvas)
+
+
+## Translation
+
+def translation_point(tra_point,Tx,Ty):
+    translationMetrix = [[1,0,0],
+                         [0,1,0],
+                         [Tx,Ty,1]]
+    translationMetrix = np.array(translationMetrix)
+    muMetrix = np.dot([tra_point[0],tra_point[1],1],translationMetrix)
+    return muMetrix
+
+def translationPainting(start,finish,canvas):
+    global currLines,currRadiuses,currCurves,mode
+
+    x = finish[0] - start[0]
+    y = finish[1] - start[1]
+
+    for i in range(len(currLines)):
+         for j in range(len(currLines[i])):
+
+             result = translation_point([currLines[0][0], currLines[0][1]], x, y)
+             currLines[0][0] = result[0]
+             currLines[0][1] = result[1]
+             currLines[0][2] = result[2]
+             result =  translation_point([currLines[1][0], currLines[1][1]], x, y)
+             currLines[1][0] = result[0]
+             currLines[1][1] = result[1]
+             currLines[0][2] = result[2]
+
+    for i in range(len(currRadiuses)):
+        for j in range(len(currRadiuses[i])):
+
+            result = translation_point([currRadiuses[0][0], currRadiuses[0][1]], x, y)
+            currRadiuses[0][0] = result[0]
+            currRadiuses[0][1] = result[1]
+            currRadiuses[0][2] = result[2]
+            result =  translation_point([currRadiuses[1][0], currRadiuses[1][1]], x, y)
+            currRadiuses[1][0] = result[0]
+            currRadiuses[1][1] = result[1]
+            currRadiuses[1][2] = result[2]
+
+    for i in range(len(currCurves)):
+        for j in range(len(currCurves[i])):
+            result = translation_point([currCurves[0][0], currCurves[0][1]], x, y)
+            currCurves[0][0] = result[0]
+            currCurves[0][1] = result[1]
+            currCurves[0][2] = result[2]
+            result =  translation_point([currCurves[1][0], currCurves[1][1]], x, y)
+            currCurves[1][0] = result[0]
+            currCurves[1][1] = result[1]
+            currCurves[1][2] = result[2]
+            result = translation_point([currCurves[2][0], currCurves[2][1]], x, y)
+            currCurves[2][0] = result[0]
+            currCurves[2][1] = result[1]
+            currCurves[2][2] = result[2]
+            result =  translation_point([currCurves[3][0], currCurves[3][1]], x, y)
+            currCurves[3][0] = result[0]
+            currCurves[3][1] = result[1]
+            currCurves[3][2] = result[2]
+
+# clear the canvas before painting the new scaled painting
+    canvas.delete("all")
+    mode = "None"
+    drawLines(currLines, canvas)
+    drawRadiuses(currRadiuses, canvas)
+    drawCurves(currCurves, canvas)
+
+
+
+
