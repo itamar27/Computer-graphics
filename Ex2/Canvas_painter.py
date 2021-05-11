@@ -198,6 +198,7 @@ def scaleInputToScreen(lines, radiuses, curves, width, height):
     maxWidth = 0
     maxHeight = 0
 
+
     for line in lines:
         x1, y1, x2, y2 = createCoordinates(line)
         if(max(int(x1), int(x2)) > maxWidth):
@@ -308,119 +309,111 @@ def mirrorPainting():
 
 ### Rotation
 
-def rotatePaintingPoint(rot_point,angle):
-    rotateMetrix = [[np.cos(angle),np.sin(angle),0],
-                    [(-(np.sin(angle))),np.cos(angle),0],
-                    [0,0,1]]
-    mulMetrix = np.dot([rot_point[0],rot_point[1],1],rotateMetrix)
-    return mulMetrix
-
-def rotatePainting(points,canvas):
-    global currLines,currRadiuses,currCurves
+def makeDagree(points):
     a = np.array(points[0])
     b = np.array(points[1])
     c = np.array(points[2])
-    #calculate the angle
-    ba = b-a
-    ca = c-a
 
-    cosine_angle = np.dot(ba , ca) / (np.linalg.norm(ba) * np.linalg.norm(ca))
+    ba = a - b
+    bc = c - b
+
+    cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
     angle = np.arccos(cosine_angle)
-    x = list()
-    j=0
 
-    # multiply each vector with the matrix
-    for i in currLines:
-        point = rotatePaintingPoint(i,angle)
-        x.insert(j,point)
-        j += 1
+    return angle
 
-    for i in range(len(currLines)):
-        for j in range(len(currLines[i])):
-            currLines[i][j] = point * currLines[i][j]
-
-    for i in range(len(currRadiuses)):
-        for j in range(len(currRadiuses[i])):
-            currRadiuses[i][j] = point * currRadiuses[i][j]
-
-    for i in range(len(currCurves)):
-        for j in range(len(currCurves[i])):
-            currCurves[i][j] = point * currCurves[i][j]
-
+def rotatePainting(points,canvas):
+    global currLines,currRadiuses,currCurves,xMax, yMax
+    print(xMax,yMax)
     # clear the canvas before painting the new scaled painting
     canvas.delete("all")
 
+    angle = makeDagree(points)
+    print(angle)
+
+    # set sinus and cosinus
+    sinus = math.sin(20 / 180 * math.pi)
+    cosinus = math.cos(20 / 180 * math.pi)
+
+    # intalize 3 new lists to put in them the new coordinates
+    newLines = []
+    newCurves = []
+    newCircles = []
+
+    # transform lines
+    for line in currLines:
+        x1 = line[0]
+        y1 = line[1]
+        x2 = line[2]
+        y2 = line[3]
+
+        # new lines
+        newLines.append([x1 * cosinus - y1 * sinus, y1 * cosinus + x1 * sinus, x2 * cosinus - y2 * sinus, y2 * cosinus + x2 * sinus])
+
+    # transform curves
+    for curve in currCurves:
+        x1 = curve[0]
+        y1 = curve[1]
+        x2 = curve[2]
+        y2 = curve[3]
+        x3 = curve[4]
+        y3 = curve[5]
+        x4 = curve[6]
+        y4 = curve[7]
+
+        # new curves
+        newCurves.append([
+            x1 * cosinus - y1 * sinus,
+            x1 * sinus + y1 * cosinus,
+            x2 * cosinus - y2 * sinus,
+            x2 * sinus + y2 * cosinus,
+            x3 * cosinus - y3 * sinus,
+            x3 * sinus + y3 * cosinus,
+            x4 * cosinus - y4 * sinus,
+            x4 * sinus + y4 * cosinus
+        ])
+
+    # transform circles
+    for circle in currRadiuses:
+        x = circle[0]
+        y = circle[1]
+
+        # new circles
+        newCircles.append([x * cosinus - y * sinus, x * sinus + y * cosinus, circle[2]])
+
     # draw the painting after scaling it to device proportions
-    drawLines(currLines, canvas)
-    drawRadiuses(currRadiuses, canvas)
-    drawCurves(currCurves, canvas)
+    drawLines(newLines, canvas)
+    drawRadiuses(newCircles, canvas)
+    drawCurves(newCurves, canvas)
 
 
 ## Translation
 
-def translation_point(tra_point,Tx,Ty):
-    translationMetrix = [[1,0,0],
-                         [0,1,0],
-                         [Tx,Ty,1]]
-    translationMetrix = np.array(translationMetrix)
-    muMetrix = np.dot([tra_point[0],tra_point[1],1],translationMetrix)
-    return muMetrix
+def translationPainting(Tx, Ty, canvas):
+    global currLines,currRadiuses,currCurves
 
-def translationPainting(start,finish,canvas):
-    global currLines,currRadiuses,currCurves,mode
-
-    x = finish[0] - start[0]
-    y = finish[1] - start[1]
-
-    for i in range(len(currLines)):
-         for j in range(len(currLines[i])):
-
-             result = translation_point([currLines[0][0], currLines[0][1]], x, y)
-             currLines[0][0] = result[0]
-             currLines[0][1] = result[1]
-             currLines[0][2] = result[2]
-             result =  translation_point([currLines[1][0], currLines[1][1]], x, y)
-             currLines[1][0] = result[0]
-             currLines[1][1] = result[1]
-             currLines[0][2] = result[2]
-
-    for i in range(len(currRadiuses)):
-        for j in range(len(currRadiuses[i])):
-
-            result = translation_point([currRadiuses[0][0], currRadiuses[0][1]], x, y)
-            currRadiuses[0][0] = result[0]
-            currRadiuses[0][1] = result[1]
-            currRadiuses[0][2] = result[2]
-            result =  translation_point([currRadiuses[1][0], currRadiuses[1][1]], x, y)
-            currRadiuses[1][0] = result[0]
-            currRadiuses[1][1] = result[1]
-            currRadiuses[1][2] = result[2]
-
-    for i in range(len(currCurves)):
-        for j in range(len(currCurves[i])):
-            result = translation_point([currCurves[0][0], currCurves[0][1]], x, y)
-            currCurves[0][0] = result[0]
-            currCurves[0][1] = result[1]
-            currCurves[0][2] = result[2]
-            result =  translation_point([currCurves[1][0], currCurves[1][1]], x, y)
-            currCurves[1][0] = result[0]
-            currCurves[1][1] = result[1]
-            currCurves[1][2] = result[2]
-            result = translation_point([currCurves[2][0], currCurves[2][1]], x, y)
-            currCurves[2][0] = result[0]
-            currCurves[2][1] = result[1]
-            currCurves[2][2] = result[2]
-            result =  translation_point([currCurves[3][0], currCurves[3][1]], x, y)
-            currCurves[3][0] = result[0]
-            currCurves[3][1] = result[1]
-            currCurves[3][2] = result[2]
-
-# clear the canvas before painting the new scaled painting
+    # clear the canvas before painting the new scaled painting
     canvas.delete("all")
-    mode = "None"
-    drawLines(currLines, canvas)
-    drawRadiuses(currRadiuses, canvas)
-    drawCurves(currCurves, canvas)
+
+    newLines = []
+    newCircles = []
+    newCurves = []
+
+    for line in currLines:
+        newLines.append([line[0] + Tx, line[1] + Ty, line[2] + Tx, line[3] + Ty])
+
+    for circle in currRadiuses:
+        newCircles.append([circle[0] + Tx, circle[1] + Ty, circle[2]])
+
+    for curve in currCurves:
+        tmpCurves = []
+        for i,curr in enumerate(curve):
+            tmpCurves.append(Tx + curr if i % 2 == 0 else curr + Ty)
+        newCurves.append(tmpCurves)
+
+    drawLines(newLines, canvas)
+    drawRadiuses(newCircles, canvas)
+    drawCurves(newCurves, canvas)
 
 
 

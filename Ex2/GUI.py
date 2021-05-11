@@ -6,7 +6,7 @@ from fileManager import *
 
 # Tkinter global values
 width = 1080
-height = 500
+height = 700
 window = Tk()
 window.geometry('{}x{}'.format(width, height))
 window.title('Exercise 2')
@@ -88,6 +88,9 @@ def mouse_click(event):
     point_index += 1
     #starts drawing, based on points num and mode
     if( mode == "mirror" and point_index == 1):
+        point_index = 0
+        draw()
+    elif (mode == "translation" and point_index == 1):
         point_index = 0
         draw()
     elif (mode == "rotate" and point_index == 3):
@@ -210,7 +213,7 @@ def set_trans(mode_label, help_label):
     global canvas,points,mode
     # prepare text
     mode = 'translation'
-    help = "Click on 2 points on the screen to make the drawing in the direction and distance"
+    help = "Click on point on the screen to make the drawing translation"
     setText(mode_label, help_label, "Translation", help)
 
 ###############################
@@ -222,7 +225,6 @@ def set_rotate(help_label,mode_label):
     help = "Click on 3 points on the screen to make a line. The first line is the origin, and the other 2 decide the angle"
     setText(mode_label, help_label, "Rotate", help)
     mode = "rotate"
-    print(points)
     # rotateTranform ()
 
 def rotateTranform():
@@ -241,5 +243,4 @@ def draw():
     if mode == 'rotate':
         rotatePainting(points,canvas)
     elif mode == 'translation':
-        translationPainting(points[0], points[1],canvas)
-
+        translationPainting(points[0][0], points[0][1],canvas)
