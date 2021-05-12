@@ -93,7 +93,7 @@ def mouse_click(event):
     elif (mode == "translation" and point_index == 1):
         point_index = 0
         draw()
-    elif (mode == "rotate" and point_index == 3):
+    elif (mode == "rotate" and point_index == 2):
         point_index = 0
         draw()
     elif (point_index > 1 and mode != "curve" and mode != "rotate") or (point_index > 3 and mode == "curve"):

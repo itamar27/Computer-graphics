@@ -17,7 +17,7 @@ yMax = 0
 
 
 # functions
-def updatePaintingBoundries(xMin_new=xMin, yMin_new=yMin, xMax_new=xMax, yMax_new=yMax):
+def updatePaintingBoundries(xMin_new, yMin_new, xMax_new, yMax_new):
     global xMin, yMin, xMax, yMax
 
     xMin = xMin_new
@@ -326,7 +326,7 @@ def scalePainting(canvas, newscale=0.5):
 
 
 def mirrorOnYAxis(yBorder):
-    global currLines, currRadiuses, currCurves, yMin, yMax
+    global currLines, currRadiuses, currCurves, xMin, yMin, xMax, yMax
 
     for i in range(len(currLines)):
         #mirroring yVals and then correcting values to our screen
@@ -345,13 +345,13 @@ def mirrorOnYAxis(yBorder):
         currCurves[i][7] = currCurves[i][7] + (yBorder - currCurves[i][7])*2
 
     if(yBorder == yMin):
-        updatePaintingBoundries(yMin_new=(yMin - (yMax - yMin)), yMax_new=yMin)
+        updatePaintingBoundries(xMin, (yMin - (yMax - yMin)), xMax, yMin)
     
     if(yBorder == yMax):
-        updatePaintingBoundries(yMin_new=yMax, yMax_new=(yMax + (yMax - yMin)))
+        updatePaintingBoundries(xMin, yMax, xMax, yMax + (yMax - yMin))
 
 def mirrorOnXAxis(xBorder):
-    global currLines, currRadiuses, currCurves, xMin, xMax
+    global currLines, currRadiuses, currCurves, xMin, yMin, xMax, yMax
 
     for i in range(len(currLines)):
         #mirroring x values and then correcting values to our screen
@@ -370,10 +370,10 @@ def mirrorOnXAxis(xBorder):
         currCurves[i][6] = currCurves[i][6] + (xBorder - currCurves[i][6])*2
 
     if(xBorder == xMin):
-        updatePaintingBoundries(xMin_new=(xMin - (xMax - xMin)), xMax_new=xMin)
+        updatePaintingBoundries((xMin - (xMax - xMin)), yMin, xMin, yMax)
     
     if(xBorder == xMax):
-        updatePaintingBoundries(xMin_new=xMax, xMax_new=(xMax + (xMax - xMin)))
+        updatePaintingBoundries(xMax, yMin, xMax + (xMax - xMin), yMax)
 
 
 def mirrorPainting(canvas, direction = "Right"):
@@ -410,8 +410,8 @@ def mirrorPainting(canvas, direction = "Right"):
 
 def makeDagree(points):
     a = np.array(points[0])
-    b = np.array(points[1])
-    c = np.array(points[2])
+    b = np.array([yMin, xMin])
+    c = np.array(points[1])
 
     ba = a - b
     bc = c - b
@@ -421,6 +421,7 @@ def makeDagree(points):
 
     return angle
 
+
 def rotatePainting(points,canvas):
     global currLines,currRadiuses,currCurves,xMax, yMax
 
@@ -428,11 +429,11 @@ def rotatePainting(points,canvas):
     canvas.delete("all")
 
     angle = makeDagree(points)
-    print(angle)
 
     # set sinus and cosinus
-    sinus = math.sin(20 / 180 * math.pi)
-    cosinus = math.cos(20 / 180 * math.pi)
+    sinus = math.sin(90)
+    #cosinus = math.cos(angle * math.pi)
+    cosinus = math.cos(90)
 
     # intalize 3 new lists to put in them the new coordinates
     newLines = []
@@ -489,14 +490,16 @@ def rotatePainting(points,canvas):
 ## Translation
 
 def translationPainting(Tx, Ty, canvas):
-    global currLines,currRadiuses,currCurves
+    global currLines,currRadiuses,currCurves, xMin, yMin, xMax, yMax
 
     # clear the canvas before painting the new scaled painting
-    canvas.delete("all")
 
     newLines = []
     newCircles = []
     newCurves = []
+
+    Tx = Tx-xMin
+    Ty = Ty-yMin
 
     for line in currLines:
         newLines.append([line[0] + Tx, line[1] + Ty, line[2] + Tx, line[3] + Ty])
@@ -514,10 +517,9 @@ def translationPainting(Tx, Ty, canvas):
     currRadiuses = newCircles
     currCurves = newCurves
 
+    updatePaintingBoundries(xMin+Tx, yMin+Ty, xMax+Tx, yMax+Ty)
+
+    canvas.delete("all")
     drawLines(newLines, canvas)
     drawRadiuses(newCircles, canvas)
     drawCurves(newCurves, canvas)
-
-
-
-
