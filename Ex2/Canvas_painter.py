@@ -291,9 +291,6 @@ def createCoordinates(string):
 
 ### Linear Transformation implementation
 #initilize drawing
-def init_draw():
-    global point_index
-    point_index = 0
 
 def scalePainting(canvas, newscale=0.5):
     '''
@@ -408,32 +405,23 @@ def mirrorPainting(canvas, direction = "Right"):
 
 ### Rotation
 
-def makeDagree(points):
-    a = np.array(points[0])
-    b = np.array([yMin, xMin])
-    c = np.array(points[1])
+# polar to cordinants radians
+def fixCord( x, y):
+    r = math.sqrt(pow(x, 2) + pow(y, 2))
+    _pi = math.atan2(y, x) * 180 / math.pi
+    _pi = _pi / 180 * math.pi
 
-    ba = a - b
-    bc = c - b
-
-    cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
-    angle = np.arccos(cosine_angle)
-
-    return angle
+    return r * math.cos(_pi), r * math.sin(_pi)
 
 
-def rotatePainting(points,canvas):
-    global currLines,currRadiuses,currCurves,xMax, yMax
-
+def rotatePainting(dagree,canvas):
+    global currLines,currRadiuses,currCurves,xMin,yMin
     # clear the canvas before painting the new scaled painting
     canvas.delete("all")
 
-    angle = makeDagree(points)
-
     # set sinus and cosinus
-    sinus = math.sin(90)
-    #cosinus = math.cos(angle * math.pi)
-    cosinus = math.cos(90)
+    sinus = math.sin(dagree/ 180 * math.pi)
+    cosinus = math.cos(dagree/ 180 * math.pi)
 
     # intalize 3 new lists to put in them the new coordinates
     newLines = []
@@ -447,8 +435,17 @@ def rotatePainting(points,canvas):
         x2 = line[2]
         y2 = line[3]
 
+        # convert cartesian to polar
+        px1, py1 = fixCord(x1 - xMin, y1 - yMin)
+        px2, py2 = fixCord(x2 - xMin, y2 - yMin)
+
+        n0 = (px1 * cosinus - py1 * sinus) + xMin
+        n1 = (py1 * cosinus + px1 * sinus) + yMin
+        n2 = (px2 * cosinus - py2 * sinus) + xMin
+        n3 = (py2 * cosinus + px2 * sinus) + yMin
+
         # new lines
-        newLines.append([x1 * cosinus - y1 * sinus, y1 * cosinus + x1 * sinus, x2 * cosinus - y2 * sinus, y2 * cosinus + x2 * sinus])
+        newLines.append([n0,n1,n2,n3])
 
     # transform curves
     for curve in currCurves:
@@ -461,31 +458,47 @@ def rotatePainting(points,canvas):
         x4 = curve[6]
         y4 = curve[7]
 
+        # convert cartesian to polar
+        px1, py1 = fixCord(x1-xMin, y1-yMin)
+        px2, py2 = fixCord(x2-xMin, y2-yMin)
+        px3, py3 = fixCord(x3-xMin, y3-yMin)
+        px4, py4 = fixCord(x4-xMin, y4-yMin)
+
         # new curves
-        newCurves.append([
-            x1 * cosinus - y1 * sinus,
-            x1 * sinus + y1 * cosinus,
-            x2 * cosinus - y2 * sinus,
-            x2 * sinus + y2 * cosinus,
-            x3 * cosinus - y3 * sinus,
-            x3 * sinus + y3 * cosinus,
-            x4 * cosinus - y4 * sinus,
-            x4 * sinus + y4 * cosinus
-        ])
+        n0 = (px1 * cosinus - py1 * sinus) + xMin
+        n1 = (px1 * sinus + py1 * cosinus) + yMin
+        n2 = (px2 * cosinus - py2 * sinus) + xMin
+        n3 = (px2 * sinus + py2 * cosinus) + yMin
+        n4 = (px3 * cosinus - py3 * sinus) + xMin
+        n5 = (px3 * sinus + py3 * cosinus) + yMin
+        n6 = (px4 * cosinus - py4 * sinus) + xMin
+        n7 = (px4 * sinus + py4 * cosinus) + yMin
+
+        newCurves.append([n0,n1,n2,n3,n4,n5,n6,n7])
 
     # transform circles
     for circle in currRadiuses:
         x = circle[0]
         y = circle[1]
 
+        # convert cartesian to polar
+        px1, py1 = fixCord(x - xMin, y - yMin)
+
+
         # new circles
-        newCircles.append([x * cosinus - y * sinus, x * sinus + y * cosinus, circle[2]])
+        n0 = (px1 * cosinus - py1 * sinus) + xMin
+        n1 = (px1 * sinus + py1 * cosinus) + yMin
+
+        newCircles.append([n0,n1, circle[2]])
+
+    currLines = newLines
+    currRadiuses = newCircles
+    currCurves = newCurves
 
     # draw the painting after scaling it to device proportions
     drawLines(newLines, canvas)
     drawRadiuses(newCircles, canvas)
     drawCurves(newCurves, canvas)
-
 
 ## Translation
 
