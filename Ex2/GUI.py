@@ -1,5 +1,6 @@
 # Imports
 from Canvas_painter import *
+from tkinter import  *
 
 # Tkinter global values
 width = 1080
@@ -95,7 +96,7 @@ def mouse_click(event):
     #starts drawing, based on points num and mode
     if (mode == "translation" and point_index == 1):
         point_index = 0
-        draw()
+        drawTrans()
 
 def setText(mode_label, help_label, mode, help):
     mode_label['text'] = "Drawing Mode : {} ".format(mode)
@@ -223,6 +224,12 @@ def set_trans(mode_label, help_label):
     help = "Click on point on the screen to make the drawing translation"
     setText(mode_label, help_label, "Translation", help)
 
+## draw all transformations and send to them mouse clicks
+def drawTrans():
+    global mode
+    if mode == 'translation':
+        translationPainting(points[0][0], points[0][1],canvas)
+
 ###############################
 ###      Rotate             ###
 ###############################
@@ -256,7 +263,6 @@ def popUpRotate():
     Button(newWindow, text="Confirm", command=lambda: rotateTranform(newScale, newWindow),
            height=2, width=10, bg='SkyBlue4', fg='white').pack(side=BOTTOM, pady=15)
 
-
 def rotateTranform(dagree, newWindow):
     '''
     Transformation for rotate
@@ -264,9 +270,5 @@ def rotateTranform(dagree, newWindow):
     rotatePainting(float(dagree.get()),canvas)
     newWindow.destroy()
 
-## draw all transformations and send to them mouse clicks
 
-def draw():
-    global mode
-    if mode == 'translation':
-        translationPainting(points[0][0], points[0][1],canvas)
+
