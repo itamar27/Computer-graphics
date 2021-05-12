@@ -50,6 +50,9 @@ def setUpGraphicalEnv():
                            width=16, command=lambda: set_mirror(mode_label, help_label))
     rotate_button = Button(button_frame, text="Rotate",
                            width=16, command=lambda: set_rotate(mode_label, help_label))
+    shear_button = Button(button_frame, text="Shear",
+                           width=16, command=lambda: set_shearing(mode_label, help_label))
+
 
     # Packing up UI environment
     help_label.pack()
@@ -60,6 +63,7 @@ def setUpGraphicalEnv():
     scale_button.pack(side="left")
     mirror_button.pack(side="left")
     rotate_button.pack(side="left")
+    shear_button.pack(side="bottom")
     clear_button.pack(side="left")
     button_frame.pack(side="bottom")
 
@@ -100,17 +104,58 @@ def mouse_click(event):
         point_index = 0
         draw()
 
-
-def set_shearing():
-    global mode
-    mode = "shearing"
-    # init_draw()
-
-
-
 def setText(mode_label, help_label, mode, help):
     mode_label['text'] = "Drawing Mode : {} ".format(mode)
     help_label['text'] = help
+
+###############################
+###          Shear          ###
+###############################
+def set_shearing(mode_label, help_label):
+
+    # Generate addition text to action
+    help = "Enter x and y shearing values:"
+    setText(mode_label, help_label, 'Shear', help)
+
+    # Do the scaling
+    popUpShear()
+
+def popUpShear():
+    '''
+    This function generates input needed for the transformation
+    '''
+    # Toplevel object which will
+    # be treated as a new window
+    newWindow = Toplevel(window)
+    newWindow.title("Shear paint")
+
+    # sets the geometry of toplevel
+    newWindow.geometry("400x200")
+
+    # A Label widget to show in toplevel
+    Label(newWindow,
+          text="Please choose the measure you would like to shear the paint:").pack()
+
+    Label(newWindow,
+          text="\nEnter X value (0 for no change):").pack()
+    xShear = Entry(newWindow)
+    xShear.pack()
+
+    Label(newWindow,
+        text="Enter Y value (0 for no change):").pack()
+    yShear = Entry(newWindow)
+    yShear.pack()
+
+    # Packing a button to the new window
+    Button(newWindow, text="Confirm", command=lambda: shearTranform(xShear, yShear, newWindow),
+           height=2, width=10, bg='SkyBlue4', fg='white').pack(side=BOTTOM, pady=15)
+
+def shearTranform(xShear, yShear, newWindow):
+    '''
+    Transformation for shearing
+    '''
+    shearPainting(canvas, float(xShear.get()), float(yShear.get()))
+    newWindow.destroy()
 
 ###############################
 ###          MIRROR         ###

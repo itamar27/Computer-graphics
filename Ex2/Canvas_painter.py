@@ -523,3 +523,37 @@ def translationPainting(Tx, Ty, canvas):
     drawLines(newLines, canvas)
     drawRadiuses(newCircles, canvas)
     drawCurves(newCurves, canvas)
+
+def shearPainting(canvas, shearX, shearY):
+    global currLines, currRadiuses, currCurves, xMin, yMin, xMax, yMax
+
+    shearX = float(shearX) / 10
+
+    shearY = float(shearY) / 10
+
+    for i in range(0, len(currLines)):
+        currLines[i][0] = currLines[i][0] + (currLines[i][1]-yMin)*shearX
+        currLines[i][1] = currLines[i][1] + (currLines[i][0]-xMin)*shearY
+        currLines[i][2] = currLines[i][2] + (currLines[i][3]-yMin)*shearX
+        currLines[i][3] = currLines[i][3] + (currLines[i][2]-xMin)*shearY
+    
+    for i in range(len(currRadiuses)):
+        currRadiuses[i][0] = currRadiuses[i][0] + (currRadiuses[i][1]-yMin)*shearX
+        currRadiuses[i][1] = currRadiuses[i][1] + (currRadiuses[i][0]-xMin)*shearY
+    
+    for i in range(len(currCurves)):
+        currCurves[i][0] = currCurves[i][0] + (currCurves[i][1]-yMin)*shearX
+        currCurves[i][1] = currCurves[i][1] + (currCurves[i][0]-xMin)*shearY
+        currCurves[i][2] = currCurves[i][2] + (currCurves[i][3]-yMin)*shearX
+        currCurves[i][3] = currCurves[i][3] + (currCurves[i][2]-xMin)*shearY
+        currCurves[i][4] = currCurves[i][4] + (currCurves[i][5]-yMin)*shearX
+        currCurves[i][5] = currCurves[i][5] + (currCurves[i][4]-xMin)*shearY
+        currCurves[i][6] = currCurves[i][6] + (currCurves[i][7]-yMin)*shearX
+        currCurves[i][7] = currCurves[i][7] + (currCurves[i][6]-xMin)*shearY
+
+    updatePaintingBoundries(xMin, yMin, xMax+shearX*(yMax-yMin), yMax+shearY*(xMax-xMin))
+
+    canvas.delete("all")
+    drawLines(currLines, canvas)
+    drawRadiuses(currRadiuses, canvas)
+    drawCurves(currCurves, canvas)
