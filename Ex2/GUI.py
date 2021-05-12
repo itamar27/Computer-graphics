@@ -124,7 +124,7 @@ def set_mirror(mode_label, help_label):
     setText(mode_label, help_label, "Mirror", help)
 
     # open window input for mirroring
-    popUpMirror()
+    mirrorPainting(canvas)
 
 def popUpMirror():
     '''
