@@ -60,7 +60,7 @@ def setUpGraphicalEnv():
     scale_button.pack(side="left")
     mirror_button.pack(side="left")
     rotate_button.pack(side="left")
-    shear_button.pack(side="bottom")
+    shear_button.pack(side="left")
     clear_button.pack(side="left")
     quit_button.pack(side="left")
     button_frame.pack(side="bottom")
