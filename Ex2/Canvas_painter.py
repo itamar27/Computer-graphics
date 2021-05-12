@@ -1,9 +1,6 @@
 # imports
-from tkinter import *
-from tkinter import font as tkFont
 from fileManager import *
 import math as math
-import re
 import numpy as np
 
 # Globals

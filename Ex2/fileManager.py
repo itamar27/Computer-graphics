@@ -58,8 +58,6 @@ def selectFile():
     folder_path = tk.StringVar()
     filename = askopenfilename()
     folder_path.set(filename)
-    print("path:" + filename)
-
     # send file path for opening
     return  handleFile(filename)
 
