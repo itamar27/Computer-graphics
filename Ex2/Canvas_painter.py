@@ -41,7 +41,6 @@ def drawPixel(x, y, canvas):
     Because tkinter doesn't have any function like 'PutPixel()', we will use a manipulation on the create_rectangle methods
     '''
     canvas.create_line(x, y, x + 1, y)
-    #canvas.create_rectangle((x, y) * 2, outline=colorString)
 
 
 def MyLine(x0, y0, x1, y1, canvas):
@@ -338,10 +337,15 @@ def mirrorOnYAxis(yBorder):
         currCurves[i][5] = currCurves[i][5] + (yBorder - currCurves[i][5])*2
         currCurves[i][7] = currCurves[i][7] + (yBorder - currCurves[i][7])*2
 
+    # Updating the boundries of the painting
     if(yBorder == yMin):
-        updatePaintingBoundries(xMin, (yMin - (yMax - yMin)), xMax, yMin)
+        # yMin = yMin - (yMax - yMin)
+        # yMax = yMin
+        updatePaintingBoundries(xMin, yMin - (yMax - yMin), xMax, yMin)
     
-    if(yBorder == yMax):
+    elif(yBorder == yMax):
+        # yMin = yMax
+        # yMax = yMax + (yMax - yMin)
         updatePaintingBoundries(xMin, yMax, xMax, yMax + (yMax - yMin))
 
 def mirrorOnXAxis(xBorder):
@@ -363,14 +367,19 @@ def mirrorOnXAxis(xBorder):
         currCurves[i][4] = currCurves[i][4] + (xBorder - currCurves[i][4])*2
         currCurves[i][6] = currCurves[i][6] + (xBorder - currCurves[i][6])*2
 
+    # Updating the boundries of the painting
     if(xBorder == xMin):
-        updatePaintingBoundries((xMin - (xMax - xMin)), yMin, xMin, yMax)
+        # xMin = xMin - (xMax - xMin)
+        # xMax = xMin
+        updatePaintingBoundries(xMin - (xMax - xMin), yMin, xMin, yMax)
     
-    if(xBorder == xMax):
+    elif(xBorder == xMax):
+        # xMin = xMax
+        # xMax = xMax + (xMax - xMin)
         updatePaintingBoundries(xMax, yMin, xMax + (xMax - xMin), yMax)
 
 
-def mirrorPainting(canvas, direction = "Right"):
+def mirrorPainting(canvas, direction):
     '''
     Mirror the painting to a selected direction.
     '''

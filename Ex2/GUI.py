@@ -3,8 +3,10 @@ from Canvas_painter import *
 from tkinter import  *
 
 # Tkinter global values
-width = 1080
-height = 700
+width = 1200
+height = 900
+buttonWidth = int(0.012 * width)
+buttonHeight = int(0.006 * height)
 window = Tk()
 window.geometry('{}x{}'.format(width, height))
 window.title('Exercise 2')
@@ -12,7 +14,7 @@ canvas = Canvas(window, width=width, height=0.87*height, bg='#ffffff')
 
 # Global environment variables
 mode = "None"
-points = [[0,0], [0,0], [0,0], [0,0]]
+point = []
 clicks = 0
 point_index = 0
 
@@ -21,6 +23,8 @@ def setUpGraphicalEnv():
     '''
     Declaring on all the UI elements and packing them to the canvas
     '''
+    global buttonWidth
+
     # Customize windows look
     customizeWindow()
 
@@ -36,21 +40,21 @@ def setUpGraphicalEnv():
 
     # Defining window elements
     load_coords = Button(button_frame, text="Choose File",
-                         width=16,  command=lambda: readCoordinates(width, 0.87*height, canvas))
+                         width=buttonWidth, height=buttonHeight, font=("Arial", 12), command=lambda: readCoordinates(width, 0.87*height, canvas))
     clear_button = Button(button_frame, text="Clear",
-                          width=16, command=lambda: clearCanvas(canvas))
+                          width=buttonWidth, height=buttonHeight, font=("Arial", 12), command=lambda: clearCanvas(canvas))
     trans_button = Button(button_frame, text="Translation",
-                          width=16, command=lambda: set_trans(mode_label, help_label))
+                          width=buttonWidth, height=buttonHeight, font=("Arial", 12), command=lambda: set_trans(mode_label, help_label))
     scale_button = Button(button_frame, text="Scale",
-                          width=16, command=lambda: set_scale(mode_label, help_label))
+                          width=buttonWidth, height=buttonHeight, font=("Arial", 12), command=lambda: set_scale(mode_label, help_label))
     mirror_button = Button(button_frame, text="Mirror",
-                           width=16, command=lambda: set_mirror(mode_label, help_label))
+                           width=buttonWidth, height=buttonHeight, font=("Arial", 12), command=lambda: set_mirror(mode_label, help_label))
     rotate_button = Button(button_frame, text="Rotate",
-                           width=16, command=lambda: set_rotate(mode_label, help_label))
+                           width=buttonWidth, height=buttonHeight, font=("Arial", 12), command=lambda: set_rotate(mode_label, help_label))
     shear_button = Button(button_frame, text="Shear",
-                           width=16, command=lambda: set_shearing(mode_label, help_label))
+                           width=buttonWidth, height=buttonHeight, font=("Arial", 12), command=lambda: set_shearing(mode_label, help_label))
     quit_button = Button(button_frame, text="Quit",
-                         width=16, command=lambda: quitBut())
+                         width=buttonWidth, height=buttonHeight, font=("Arial", 12), command=lambda: quitBut())
 
     # Packing up UI environment
     help_label.pack()
@@ -90,12 +94,11 @@ def customizeWindow():
     mirror_axis.set('x')
 
 def mouse_click(event):
-    global point_index, points, mode
-    points[point_index] = [event.x, event.y]
-    point_index += 1
+    global point_index, point, mode
+    point = [event.x, event.y]
+    
     #starts drawing, based on points num and mode
-    if (mode == "translation" and point_index == 1):
-        point_index = 0
+    if (mode == "translation"):
         drawTrans()
 
 def setText(mode_label, help_label, mode, help):
@@ -128,7 +131,7 @@ def popUpShear():
 
     # A Label widget to show in toplevel
     Label(newWindow,
-          text="Please choose the measure you would like to shear the paint:").pack()
+          text="Please enter the values for the shearing:").pack()
 
     Label(newWindow,
           text="\nEnter X value (0 for no change):").pack()
@@ -141,7 +144,7 @@ def popUpShear():
     yShear.pack()
 
     # Packing a button to the new window
-    Button(newWindow, text="Confirm", command=lambda: shearTranform(xShear, yShear, newWindow),
+    Button(newWindow, text="Shear", command=lambda: shearTranform(xShear, yShear, newWindow),
            height=2, width=10, bg='SkyBlue4', fg='white').pack(side=BOTTOM, pady=15)
 
 def shearTranform(xShear, yShear, newWindow):
@@ -149,7 +152,6 @@ def shearTranform(xShear, yShear, newWindow):
     Transformation for shearing
     '''
     shearPainting(canvas, float(xShear.get()), float(yShear.get()))
-    newWindow.destroy()
 
 
 ###############################
@@ -160,17 +162,46 @@ def set_mirror(mode_label, help_label):
     # Generate addition text to action
     global mode
     mode = "mirror"
-    help = "Enter the pop up window the desired mirror transformation:"
+    help = "Click on the button for the mirroring direction"
     setText(mode_label, help_label, "Mirror", help)
     # open window input for mirroring
-    mirrorPainting(canvas)
+    popUpMirror()
 
-def mirrorTranform(newWindow):
+def popUpMirror():
+    '''
+    This function generates input needed for the transformation
+    '''
+    # Toplevel object which will
+    # be treated as a new window
+    newWindow = Toplevel(window)
+    newWindow.title("Mirror paint")
+
+    # sets the geometry of toplevel
+    newWindow.geometry("400x350")
+
+    # A Label widget to show in toplevel
+    Label(newWindow,
+          text="Please choose the direction you would like to mirror the paint to:").pack()
+
+    # Packing a button to the new window
+    Button(newWindow, text="Up", command=lambda: mirrorTranform("Up" ,newWindow),
+           height=2, width=10, bg='SkyBlue4', fg='white').pack(pady=5)
+    Button(newWindow, text="Down", command=lambda: mirrorTranform("Down" ,newWindow),
+           height=2, width=10, bg='SkyBlue4', fg='white').pack(pady=5)
+    Button(newWindow, text="Left", command=lambda: mirrorTranform("Left" ,newWindow),
+           height=2, width=10, bg='SkyBlue4', fg='white').pack(pady=5)
+    Button(newWindow, text="Right", command=lambda: mirrorTranform("Right" ,newWindow),
+           height=2, width=10, bg='SkyBlue4', fg='white').pack(pady=5)
+    Button(newWindow, text="Flip", command=lambda: mirrorTranform("Flip" ,newWindow),
+           height=2, width=10, bg='SkyBlue4', fg='white').pack(pady=5)
+    Button(newWindow, text="FlipBack", command=lambda: mirrorTranform("FlipBack" ,newWindow),
+           height=2, width=10, bg='SkyBlue4', fg='white').pack(pady=5)
+
+def mirrorTranform(direction, newWindow):
     '''
     Transformation for scaling
     '''
-    # scalePainting(canvas, float(newScale.get()))
-    newWindow.destroy()
+    mirrorPainting(canvas, direction)
 
 ###############################
 ###          SCALE          ###
@@ -179,7 +210,7 @@ def set_scale(mode_label, help_label):
     # Generate addition text to action
     global mode
     mode = "scale"
-    help = "Enter new paint measure in box"
+    help = "Enter the new scale for the painting"
     setText(mode_label, help_label, 'Scale', help)
     # Do the scaling
     popUpScale()
@@ -198,7 +229,7 @@ def popUpScale():
 
     # A Label widget to show in toplevel
     Label(newWindow,
-          text="Please choose the measure you would like to resize the paint:").pack()
+          text="Please choose the measure you would like to multiply the paint size with:").pack()
 
     newScale = Entry(newWindow)
     newScale.pack()
@@ -213,7 +244,6 @@ def scaleTranform(newScale, newWindow):
     Transformation for scaling
     '''
     scalePainting(canvas, float(newScale.get()))
-    newWindow.destroy()
 
 ###############################
 ###      Translation        ###
@@ -228,14 +258,14 @@ def set_trans(mode_label, help_label):
 def drawTrans():
     global mode
     if mode == 'translation':
-        translationPainting(points[0][0], points[0][1],canvas)
+        translationPainting(point[0], point[1], canvas)
 
 ###############################
 ###      Rotate             ###
 ###############################
 def set_rotate(mode_label,help_label):
     global mode
-    help = "Click on 3 points on the screen to make a line. The first line is the origin, and the other 2 decide the angle"
+    help = "Enter the degrees for rotating the paiting"
     mode = "rotate"
     setText(mode_label, help_label, "Rotate", help)
     popUpRotate()
@@ -268,7 +298,6 @@ def rotateTranform(dagree, newWindow):
     Transformation for rotate
     '''
     rotatePainting(float(dagree.get()),canvas)
-    newWindow.destroy()
 
 
 
