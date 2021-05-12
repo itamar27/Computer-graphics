@@ -2,7 +2,7 @@
 
 from tkinter import messagebox
 
-def showError(msg):
+def showMsg(msg):
     '''
     Display error message to the main window panel   
     '''

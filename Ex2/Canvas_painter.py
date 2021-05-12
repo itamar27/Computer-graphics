@@ -11,6 +11,7 @@ xMin = 0
 yMin = 0
 xMax = 0
 yMax = 0
+fileOpen = False
 
 
 # functions
@@ -21,8 +22,6 @@ def updatePaintingBoundries(xMin_new, yMin_new, xMax_new, yMax_new):
     yMin = yMin_new
     xMax = xMax_new
     yMax = yMax_new
-        
-
 
 def clearCanvas(canvas):
     global xMin, yMin, xMax, yMax, currLines, currRadiuses, currCurves
@@ -31,6 +30,7 @@ def clearCanvas(canvas):
     currLines = []
     currRadiuses = []
     currCurves = []
+    showMsg("All clear! Let's start again.")
 
     canvas.delete("all")
 
@@ -151,8 +151,6 @@ def BezierCurve(coordsMatrix, canvas):
         x0, y0 = x1, y1
         t = t + deltaT
 
-
-
 ### Addition part for 2D transformations
 
 def drawLines(lines, canvas):
@@ -190,14 +188,14 @@ def readCoordinates(width, height, canvas):
     then scaling the vectors to our window size,
     then painting the data to the window.
     '''
-
+    global fileOpen
     # read from file the graphical elements
     lines, radiuses, curves = selectFile()
 
     # scale the world coordinates into device coordinates
     lines, radiuses, curves = scaleInputToScreen(lines, radiuses, curves, width, height)
 
-    #
+    fileOpen = True
     drawLines(lines, canvas)
     drawRadiuses(radiuses, canvas)
     drawCurves(curves,canvas)
@@ -283,8 +281,6 @@ def createCoordinates(string):
     string = string[1:-1]
     coor = string.split(',')
     return coor
-
-
 
 ### Linear Transformation implementation
 #initilize drawing
@@ -501,7 +497,6 @@ def rotatePainting(dagree,canvas):
 
 def translationPainting(Tx, Ty, canvas):
     global currLines,currRadiuses,currCurves, xMin, yMin, xMax, yMax
-
     # clear the canvas before painting the new scaled painting
 
     newLines = []

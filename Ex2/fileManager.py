@@ -4,7 +4,7 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.filedialog import askopenfilename
-from errorManager import showError
+from errorManager import showMsg
 
 # Functions
 
@@ -45,7 +45,7 @@ def handleFile(name):
                 index += 1
 
             else:
-                showError("File input is invalid please enter another file!")
+                showMsg("File input is invalid please enter another file!")
                 return
         return lines, radiuses, curves
 

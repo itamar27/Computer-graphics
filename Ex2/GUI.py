@@ -106,11 +106,9 @@ def setText(mode_label, help_label, mode, help):
 ###          Shear          ###
 ###############################
 def set_shearing(mode_label, help_label):
-
     # Generate addition text to action
     help = "Enter x and y shearing values:"
     setText(mode_label, help_label, 'Shear', help)
-
     # Do the scaling
     popUpShear()
 
@@ -165,12 +163,6 @@ def set_mirror(mode_label, help_label):
     # open window input for mirroring
     mirrorPainting(canvas)
 
-def mirrorTranform(newWindow):
-    '''
-    Transformation for scaling
-    '''
-    # scalePainting(canvas, float(newScale.get()))
-    newWindow.destroy()
 
 ###############################
 ###          SCALE          ###
