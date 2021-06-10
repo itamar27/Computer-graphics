@@ -8,10 +8,11 @@ class FileManager():
         '''
         Open the files explorer and let you choose the descriptive file
         '''
-        #folder_path = StringVar()
-        #filename = askopenfilename()
-        #folder_path.set(filename)
-        self.readFile("C:/Users/user/Desktop/Itamar/study/Third year/second semester/Introduction to graphical/EX3/polygons.txt")
+        folder_path = StringVar()
+        filename = askopenfilename()
+        folder_path.set(filename)
+        #return self.readFile("C:/Users/barak/Desktop/School/Graphics/Computer-graphics/EX3/polygons.txt")
+        return self.readFile(filename)
 
     def  readFile(self, name):
         '''
@@ -36,5 +37,7 @@ class FileManager():
                 elif category == "polygon":
                     if len(line) > 1:
                         poly = line[1].split(",")
-                        polygons.append(tuple(int(x) for x in poly))
+                        polygons.append([int(x)-1 for x in poly])
+
+        return coords, polygons
         

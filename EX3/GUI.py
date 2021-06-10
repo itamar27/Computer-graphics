@@ -3,11 +3,12 @@ from tkinter import font as tkFont
 
 #self created libaries
 from file_utils import FileManager
+from advances_shape_utils import Data
 
 class GUI:
     
     #Logical class variables
-    fileManager = FileManager()
+    
 
     #UI elements
     width = 1100
@@ -15,19 +16,17 @@ class GUI:
     color = '#000000'
     window = Tk()
     window.geometry('{}x{}'.format(width, height))
-    window.title('Exercise 2')
+    window.title('Exercise 3')
     window.configure(background='SkyBlue3')
     canvas = Canvas(window, width=width-200, height=height, bg="white")
     helv36 = tkFont.Font(family='Helvetica', size=10, weight='bold')
-
-
     
     def __init__(self):
         '''
         Initial GuI and logical elements of the program
         '''
         # create  graphical interface elements
-        fileBtn = Button(self.window, text="Open file",  command= self.fileManager.openFile,
+        fileBtn = Button(self.window, text="Open file",  command= self.openFile,
                          height=6, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
         clearBtn = Button(self.window, text="Clear Screen",  # command=lambda: clearCanvas(canvas),
@@ -59,3 +58,8 @@ class GUI:
 
     def createBoard(self):
         self.window = mainloop()
+
+    def openFile(self):
+        coords, polygons = FileManager().openFile()
+        self.data = Data(coords, polygons)
+        # NOTE: so far we have created polygons inside the Data object from the file read.
