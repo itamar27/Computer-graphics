@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import font as tkFont
+import time
 
 #self created libaries
 from file_utils import FileManager
@@ -61,7 +62,6 @@ class GUI:
     def openFile(self):
         coords, polygons = FileManager().openFile()
         self.data = Data(coords, polygons)
-        # NOTE: so far we have created polygons inside the Data object from the file read.
         self.draw('Perspective')
 
 
@@ -75,5 +75,4 @@ class GUI:
                 cord.append(p[0] + width_mid)
                 cord.append(p[1] + height_mid)
                 poly[i] = tuple(cord)
-                print(p)
             self.canvas.create_polygon(poly,fill='#ffffff',outline='#000000')

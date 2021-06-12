@@ -1,8 +1,8 @@
 import math
+from tkinter.constants import TRUE
 
 import mpmath
 import numpy as np
-
 
 class Data:
     
@@ -21,7 +21,28 @@ class Data:
         self.sortPolygons()
 
     def sortPolygons(self):
-        self.polygons.sort(key=lambda poly: poly.zIndex)
+        #self.polygons.sort(key=lambda poly: (poly.depth[0], poly.depth[1], poly.depth[2], poly.depth[3], poly.depth[4], poly.depth[5]), reverse=True)
+        self.polygons.sort(key=lambda poly: poly.depth, reverse=True)
+
+        #depths = []
+        #for index, poly in enumerate(self.polygons):
+        #    depths.append([index ,poly.depth])
+        #
+        #
+        #depths.sort(key=lambda x: (x[1][0], x[1][1], x[1][2], x[1][3], x[1][4], x[1][5]))
+        #for depth in depths:
+        #    print(depth) 
+        #print("------------------------------------\n------------------------------------")
+        #sortedPolygons = []
+        #for depth in depths:
+        #    sortedPolygons.append(self.polygons[depth[0]])
+        #
+        #for polygon in self.polygons:
+        #    print(polygon.coords)
+        #
+        #self.polygons = sortedPolygons          
+        
+        
 
     def getPolygons(self,type_projection):
         polygons = []
@@ -47,6 +68,7 @@ class Polygon:
                 self.zIndex = cord[2]
         self.color = 'black'
         self.normal = self.surface_normal()
+        self.depth = self.minMaxValues()
 
 
     def __str__(self):
@@ -79,7 +101,7 @@ class Polygon:
 
         for point in self.coords:
             new_point = [point[0],point[1],point[2],1]
-            coords = (np.matmul(new_point, ortographicMatrix))
+            coords = np.matmul(new_point, ortographicMatrix)
             coordsOrthographic.append((coords[0],coords[1]))
 
         return coordsOrthographic
@@ -95,7 +117,7 @@ class Polygon:
 
         for point in self.coords:
             new_point = [point[0],point[1],point[2],1]
-            coords = (np.matmul(new_point, obliqueMatrix))
+            coords = np.matmul(new_point, obliqueMatrix)
             coordsOblique.append((coords[0],coords[1]))
 
         return coordsOblique
@@ -111,8 +133,30 @@ class Polygon:
                                  [0, 0, 0, 0],
                                  [0, 0, 0, 1]]
             new_point = [point[0],point[1],point[2],1]
-            coords = (np.matmul(new_point, perspectiveMatrix))
+            coords = np.matmul(new_point, perspectiveMatrix)
             coordsPerspective.append((coords[0],coords[1]))
 
         return coordsPerspective
+
+    def minMaxValues(self):
+        
+        # minMaxes will be filled with: [min x, max x, min y, max y, min z, max z]
+        minMaxes = [] 
+        xVals = []
+        yVals = []
+        zVals = []
+        
+        for cord in self.coords:
+            xVals.append(cord[0])
+            yVals.append(cord[1])
+            zVals.append(cord[2])
+
+        minMaxes.append(min(xVals))
+        minMaxes.append(max(xVals))
+        minMaxes.append(min(yVals))
+        minMaxes.append(max(yVals))
+        minMaxes.append(min(zVals))
+        minMaxes.append(max(zVals))
+
+        return minMaxes
 
