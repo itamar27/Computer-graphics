@@ -21,26 +21,10 @@ class Data:
         self.sortPolygons()
 
     def sortPolygons(self):
-        #self.polygons.sort(key=lambda poly: (poly.depth[0], poly.depth[1], poly.depth[2], poly.depth[3], poly.depth[4], poly.depth[5]), reverse=True)
         self.polygons.sort(key=lambda poly: poly.depth, reverse=True)
 
-        #depths = []
-        #for index, poly in enumerate(self.polygons):
-        #    depths.append([index ,poly.depth])
-        #
-        #
-        #depths.sort(key=lambda x: (x[1][0], x[1][1], x[1][2], x[1][3], x[1][4], x[1][5]))
-        #for depth in depths:
-        #    print(depth) 
-        #print("------------------------------------\n------------------------------------")
-        #sortedPolygons = []
-        #for depth in depths:
-        #    sortedPolygons.append(self.polygons[depth[0]])
-        #
-        #for polygon in self.polygons:
-        #    print(polygon.coords)
-        #
-        #self.polygons = sortedPolygons          
+        for poly in self.polygons:
+            print(poly.coords)         
         
         
 
@@ -124,10 +108,10 @@ class Polygon:
 
     def perspectiveCoords(self):
         coordsPerspective = []
-        D = 200
+        D = 350
 
         for point in self.coords:
-            sz = D / ((point[2]) + D)
+            sz = D / (point[2] + D)
             perspectiveMatrix = [[sz, 0, 0, 0],
                                  [0, sz, 0, 0],
                                  [0, 0, 0, 0],

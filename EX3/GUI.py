@@ -75,4 +75,5 @@ class GUI:
                 cord.append(p[0] + width_mid)
                 cord.append(p[1] + height_mid)
                 poly[i] = tuple(cord)
+
             self.canvas.create_polygon(poly,fill='#ffffff',outline='#000000')
