@@ -3,7 +3,7 @@ from tkinter import font as tkFont
 
 #self created libaries
 from file_utils import FileManager
-from advances_shape_utils import Data
+from advances_shape_utils import *
 
 class GUI:
     
@@ -55,7 +55,6 @@ class GUI:
     def presentMessage(self,msg=""):
         self.msgText['text'] = msg
 
-
     def createBoard(self):
         self.window = mainloop()
 
@@ -63,3 +62,18 @@ class GUI:
         coords, polygons = FileManager().openFile()
         self.data = Data(coords, polygons)
         # NOTE: so far we have created polygons inside the Data object from the file read.
+        self.draw('Perspective')
+
+
+    def draw(self,type_projection):
+        polygons = self.data.getPolygons(type_projection)
+        height_mid = self.height / 2
+        width_mid = self.width / 2
+        for poly in polygons:
+            for i,p in enumerate(poly):
+                cord = []
+                cord.append(p[0] + width_mid)
+                cord.append(p[1] + height_mid)
+                poly[i] = tuple(cord)
+                print(p)
+            self.canvas.create_polygon(poly,fill='#ffffff',outline='#000000')
