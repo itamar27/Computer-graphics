@@ -11,7 +11,6 @@ class FileManager():
         folder_path = StringVar()
         filename = askopenfilename()
         folder_path.set(filename)
-        #return self.readFile("C:/Users/barak/Desktop/School/Graphics/Computer-graphics/EX3/polygons.txt")
         return self.readFile(filename)
 
     def  readFile(self, name):
