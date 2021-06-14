@@ -19,6 +19,7 @@ class Data:
         self.setVisiblity()
 
     def sortPolygons(self):
+        '''Sort the polgons by Zindex and make reverse'''
         for poly in self.polygons:
             poly.setZIndex()
             
@@ -27,6 +28,8 @@ class Data:
 
 
     def getPolygons(self,type_projection):
+        '''Get all the polygons and append them to specific projection
+        that get from the type_projection variable '''
         polygons = []
         self.sortPolygons()
         if type_projection == 'Orthographic':
@@ -35,7 +38,7 @@ class Data:
                     polygons.append(poly.orthographicCoords())
         elif type_projection == 'Oblique':
             for poly in self.polygons:
-                if poly.visible:
+                # if poly.visible:
                     polygons.append(poly.obliqueCoords())
         elif type_projection == 'Perspective':
             for poly in self.polygons:
@@ -44,10 +47,12 @@ class Data:
         return polygons
     
     def scale(self, mode):
+        '''Scale transform'''
         for poly in self.polygons:
             poly.scale(mode)
 
     def rotation(self,direction,angle):
+        '''Rotation transform'''
         for poly in self.polygons:
             poly.rotation(direction,angle)
         self.sortPolygons()
@@ -72,9 +77,6 @@ class Polygon:
         self.depth = self.minMaxValues()
         self.visible = False
 
-    def __str__(self):
-        return "Coords = {}\nzValues = {}\nColor = {}\nNoraml = {}\n".format(self.coords, self.zIndex, self.color,self.normal)
-
     def setZIndex(self):
         self.zIndex = self.coords[0][2]
         for cord in self.coords[1:]:
@@ -83,17 +85,19 @@ class Polygon:
 
 
     def setVisible(self):
+        ''' Check if vis<=0 the visible is invisible,
+        and the opposite if vis>0 '''
         self.surface_normal()
         viewVector = [0,0,-1000]
         tmp = np.subtract(self.coords[0], viewVector)
         vis = np.dot(tmp, self.normal)
-
         if(vis <= 0):
             self.visible = False
         else:
             self.visible = True
 
     def surface_normal(self):
+        '''Calculate the normal'''
         n1 = []
         n2 = []
         if len(self.coords) < 3:
@@ -128,20 +132,19 @@ class Polygon:
     def obliqueCoords(self):
         ''' Return oblique coordinates for 3d projects (for each polygon)'''
         coordsOblique = []
-        v1 = -0.5 * math.cos(30 * math.pi / 180)
-        v2 = -0.5 * math.sin(30 * math.pi / 180)
+        v1 = 0.5 * math.cos(30 * math.pi / 180)
+        v2 = 0.5 * math.sin(30 * math.pi / 180)
 
         #create the oblique coords matrix
-        obliqueMatrix = [[1, 0, 0, 0],
+        obliqueMatrix = np.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
                           [v1, v2, 1, 0],
-                          [0, 0, 0, 1]]
+                          [0, 0, 0, 1]])
 
         for point in self.coords:
-            new_point = [point[0],point[1],point[2],1]
+            new_point = [float(point[0]),float(point[1]),float(point[2]),1]
             coords = np.matmul(new_point, obliqueMatrix)
-            coordsOblique.append((coords[0],coords[1]))
-
+            coordsOblique.append((float(coords[0]),float(coords[1])))
         return coordsOblique
 
     def perspectiveCoords(self):
@@ -185,6 +188,9 @@ class Polygon:
         return minMaxes
     
     def scale(self, mode):
+        ''' Scale transformation multiplier every value
+        with the mulMatrix and change: Sx,Sy,Sz by the
+        wanted transformation: out or in '''
         Sx = Sy = Sz = -1
 
         #choose which scaling transformation to do
@@ -210,6 +216,9 @@ class Polygon:
         self.coords = coords
 
     def rotation(self,direction,angle):
+        ''' Rotation transformation multiplier every value
+        with the mulMatrix that was build also by the wanted angle
+        the direction by the wanted transformation: x,y,z '''
         mulMatrix = []
         cos_angle = math.cos(angle * math.pi / 180)
         sin_angle = math.sin(angle * math.pi / 180)

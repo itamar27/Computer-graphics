@@ -103,6 +103,7 @@ class GUI:
         self.msgText.pack(side=TOP, pady=10)
 
     def clearCanvas(self):
+        ''' Clear the canvas to start over '''
         self.canvas.delete("all")
         self.data = None
         showMsg("All clear! Let's start again.")
@@ -159,10 +160,16 @@ class GUI:
         return True
 
     def scale(self, mode):
+        if self.data == None:
+            showMsg("Please open file first!")
+            return
         self.data.scale(mode)
         self.draw(self.type_projection)
 
     def rotation(self, direction,angle):
+        if self.data == None:
+            showMsg("Please open file first!")
+            return
         if angle.get() == "":
             self.data.rotation(direction,float(15))
             self.draw(self.type_projection)
