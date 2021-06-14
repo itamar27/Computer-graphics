@@ -1,9 +1,6 @@
 import math
-from tkinter.constants import TRUE
-import mpmath
 import numpy as np
 from errorManager import showMsg
-
 
 class Data:
     
@@ -17,25 +14,28 @@ class Data:
             tempCords = []
             for point in poly:
                 tempCords.append(coords[point])
-            
             self.polygons.append(Polygon(tempCords))
-
         self.sortPolygons()
+        self.setVisiblity()
 
     def sortPolygons(self):
-        self.polygons.sort(key=lambda poly: poly.depth, reverse=True)
+        # self.polygons.sort(key=lambda poly: poly.depth, reverse=True)
+        self.polygons.sort(key=lambda poly: poly.zIndex, reverse=True)
 
     def getPolygons(self,type_projection):
         polygons = []
         if type_projection == 'Orthographic':
             for poly in self.polygons:
-                polygons.append(poly.orthographicCoords())
+                if poly.visible:
+                    polygons.append(poly.orthographicCoords())
         elif type_projection == 'Oblique':
             for poly in self.polygons:
-                polygons.append(poly.obliqueCoords())
+                if poly.visible:
+                    polygons.append(poly.obliqueCoords())
         elif type_projection == 'Perspective':
-            for poly in self.polygons:                
-                polygons.append(poly.perspectiveCoords())
+            for poly in self.polygons:
+                if poly.visible:
+                    polygons.append(poly.perspectiveCoords())
         return polygons
     
     def scale(self, mode):
@@ -45,6 +45,36 @@ class Data:
     def rotation(self,direction,angle):
         for poly in self.polygons:
             poly.rotation(direction,angle)
+        self.sortPolygons()
+        self.setVisiblity()
+
+    def setVisiblity(self):
+        values = self.polygons[0].minMaxValues()
+        xMax = values[1]
+        yMax = values[3]
+        zMax = values[5]
+        xMin = values[0]
+        yMin = values[2]
+        zMin = values[4]
+        for poly in self.polygons[1::]:
+            values = poly.minMaxValues()
+            if values[0] < xMin:
+                xMin = values[0]
+            if values[1] > xMax:
+                xMax = values[1]
+            if values[2] < yMin:
+                yMin = values[2]
+            if values[3] > yMax:
+                yMax = values[3]
+            if values[4] < zMin:
+                zMin = values[4]
+            if values[5] > zMax:
+                zMax = values[5]
+
+        viewNormal = [(xMax-xMin)/2,(yMax-yMin)/2,(zMax-zMin)/2]
+
+        for poly in self.polygons:
+            poly.setVisible(viewNormal)
 
 
 class Polygon:
@@ -59,28 +89,35 @@ class Polygon:
         self.color = 'black'
         self.normal = self.surface_normal()
         self.depth = self.minMaxValues()
-
+        self.visible = False
 
     def __str__(self):
         return "Coords = {}\nzValues = {}\nColor = {}\nNoraml = {}\n".format(self.coords, self.zIndex, self.color,self.normal)
 
-    def surface_normal(self):
-        n = [0.0, 0.0, 0.0]
-        for i, v_curr in enumerate(self.coords):
-            v_next = self.coords[(i+1) % len(self.coords)]
-            n[0] += (v_curr[1] - v_next[1]) * (v_curr[2] + v_next[2])
-            n[1] += (v_curr[2] - v_next[2]) * (v_curr[0] + v_next[0])
-            n[2] += (v_curr[0] - v_next[0]) * (v_curr[1] + v_next[1])
-
-        norm = np.linalg.norm(n)
-        if norm==0:
-            raise ValueError('zero norm')
+    def setVisible(self,viewVector):
+        vis = np.multiply(viewVector,self.normal)
+        if(vis <= 0):
+            self.visible = False
         else:
-            normalised = n/norm
+            self.visible = True
+        print(self.visible)
 
-        normalised_float = [float(np_float) for np_float in normalised]
+    def surface_normal(self):
+        n1 = []
+        n2 = []
+        if len(self.coords) < 3:
+            return
 
-        return normalised_float
+        n1.append(self.coords[1][0] - self.coords[0][0])
+        n1.append(self.coords[1][1] - self.coords[0][1])
+        n1.append(self.coords[1][2] - self.coords[0][2])
+
+        n2.append(self.coords[2][0] - self.coords[1][0])
+        n2.append(self.coords[2][1] - self.coords[1][1])
+        n2.append(self.coords[2][2] - self.coords[1][2])
+
+        print(n1)
+        self.normal = np.dot(n1,n2)
 
     def orthographicCoords(self):
         ''' Return orthographic coordinates for 3d projects (for each polygon)'''
@@ -131,9 +168,9 @@ class Polygon:
                                  [0, 0, 0, 0],
                                  [0, 0, 0, 1]])
 
-            new_point = [int(point[0]),int(point[1]),int(point[2]),1]
+            new_point = [float(point[0]),float(point[1]),float(point[2]),1]
             coords = np.matmul(new_point, perspectiveMatrix)
-            coordsPerspective.append((int(coords[0]),int(coords[1])))
+            coordsPerspective.append((float(coords[0]),float(coords[1])))
         return coordsPerspective
 
     def minMaxValues(self):
@@ -175,9 +212,9 @@ class Polygon:
         coords = []
 
         for coord in self.coords:
-            new_point = [int(coord[0]),int(coord[1]),int(coord[2]),1]
+            new_point = [float(coord[0]),float(coord[1]),float(coord[2]),1]
             tmp = np.matmul(new_point, mulMatrix)
-            tmp = [int(x) for x in tmp]
+            tmp = [float(x) for x in tmp]
             tmp =tmp[:-1]
             coords.append(tmp)
         self.coords = coords
@@ -210,9 +247,9 @@ class Polygon:
             ])
         coords = []
         for coord in self.coords:
-            new_point = [int(coord[0]),int(coord[1]),int(coord[2]),1]
+            new_point = [float(coord[0]),float(coord[1]),float(coord[2]),1]
             tmp = np.matmul(new_point, mulMatrix)
-            tmp = [int(x) for x in tmp]
+            tmp = [float(x) for x in tmp]
             tmp =tmp[:-1]
             coords.append(tmp)
         self.coords = coords

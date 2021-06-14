@@ -37,9 +37,6 @@ class FileManager():
                     if len(line) > 1:
                         poly = line[1].split(",")
                         polygons.append([int(x)-1 for x in poly])
-                else:
-                    showMsg("File input is invalid please enter another file!")
-                    return
 
         return coords, polygons
         

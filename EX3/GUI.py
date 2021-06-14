@@ -34,6 +34,7 @@ class GUI:
         '''
         Initial GuI and logical elements of the program
         '''
+        self.data = None
         helpmenu = Menu(self.menuHelp)
         self.menuHelp.add_cascade(label="Help", menu=helpmenu)
         helpmenu.add_command(label="About",command=self.about_command)
@@ -59,7 +60,7 @@ class GUI:
         rotateBtnZ = Button(self.window, text="Rotate Z",command=lambda:self.popUpRotate("z"),
                             height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
-        clearBtn = Button(self.window, text="Clear Screen",  command=lambda: self.clearCanvas,
+        clearBtn = Button(self.window, text="Clear Screen",  command=self.clearCanvas,
                           height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
         self.msgText = Label(self.window, height=9, width=20, bg="white")
@@ -98,10 +99,10 @@ class GUI:
 
         self.msgText.pack(side=TOP, pady=10)
 
-    def clearCanvas(canvas):
+    def clearCanvas(self):
+        self.canvas.delete("all")
+        self.data = None
         showMsg("All clear! Let's start again.")
-
-        canvas.delete("all")
 
     def about_command(self):
         showinfo("Window", " 3D transforemations \n\n This program was written by: \n Sivan salzmann - 207056334 \n Itamer Yarden - 204289987 \n Barak Daniel - 204594329 \n")
@@ -112,6 +113,7 @@ class GUI:
     # Color picker
     def choose_color(self):
         self.color = colorchooser.askcolor(title="choose color")[1]
+        self.draw(self.type_projection)
 
     def presentMessage(self, msg=""):
         self.msgText['text'] = msg
@@ -121,29 +123,35 @@ class GUI:
 
     def openFile(self):
         coords, polygons = FileManager().openFile()
+        if coords == [] or polygons == []:
+            showMsg("File input is invalid please enter another file!")
+            return
         self.data = Data(coords, polygons)
         self.draw(self.type_projection)
 
     def draw(self, type_projection):
         self.canvas.delete('all')
         self.type_projection = type_projection
+        if self.data == None:
+            showMsg("Please open file first!")
+            return
+
         polygons = self.data.getPolygons(type_projection)
-        height_mid = int(self.height / 4)
-        width_mid = int(self.width / 4)
+        height_mid = int(self.height / 2.2)
+        width_mid = int(self.width / 2.2)
 
         for poly in polygons:
             for i, p in enumerate(poly):
                 cord = []
-                cord.append(p[0] + width_mid)
-                cord.append(p[1] + height_mid)
+                cord.append(int(p[0] + width_mid))
+                cord.append(int(p[1] + height_mid))
                 poly[i] = tuple(cord)
-            self.canvas.create_polygon(poly, fill='#ffffff', outline=self.color)
-            self.presentMessage(
-                "Projection type:\n{}\n".format(type_projection))
+            self.canvas.create_polygon(poly, fill=self.color, width= 2,outline='#ffffff')
+            self.presentMessage("Projection type:\n{}\n".format(type_projection))
 
     def is_number_regex(self,s):
         """ Returns True is string is a number. """
-        if re.match("^\d+?\.\d+?$", s) is None:
+        if re.match("^-?[0-9]\d*(\.\d+)?$", s) is None:
             return s.isdigit()
         return True
 
