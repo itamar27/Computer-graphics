@@ -38,9 +38,13 @@ class Data:
         return polygons
     
     def scale(self, mode):
-        newPolygons = []
         for poly in self.polygons:
             poly.scale(mode)
+
+    def rotation(self,direction,angle):
+        for poly in self.polygons:
+            poly.rotation(direction,angle)
+
 
 class Polygon:
 
@@ -153,7 +157,6 @@ class Polygon:
         return minMaxes
     
     def scale(self, mode):
-       
         Sx = Sy = Sz = -1
 
         #choose which scaling transformation to do
@@ -170,6 +173,41 @@ class Polygon:
         )
         coords = []
 
+        for coord in self.coords:
+            new_point = [int(coord[0]),int(coord[1]),int(coord[2]),1]
+            tmp = np.matmul(new_point, mulMatrix)
+            tmp = [int(x) for x in tmp]
+            tmp =tmp[:-1]
+            coords.append(tmp)
+        self.coords = coords
+
+    def rotation(self,direction,angle):
+        mulMatrix = []
+        cos_angle = math.cos(angle * math.pi / 180)
+        sin_angle = math.sin(angle * math.pi / 180)
+
+        if direction == 'x':
+            mulMatrix = ([
+                [1, 0, 0, 0],
+                [0, cos_angle, sin_angle, 0],
+                [0, -sin_angle, cos_angle, 0],
+                [0, 0, 0, 1]
+            ])
+        elif direction == 'y':
+            mulMatrix = ([
+                [cos_angle, 0, -sin_angle,  0],
+                [0,         1, 0,           0],
+                [sin_angle, 0, cos_angle,   0],
+                [0,         0, 0,           1]
+            ])
+        elif direction == 'z':
+            mulMatrix = ([
+                [cos_angle, sin_angle, 0, 0],
+                [-sin_angle, cos_angle, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]
+            ])
+        coords = []
         for coord in self.coords:
             new_point = [int(coord[0]),int(coord[1]),int(coord[2]),1]
             tmp = np.matmul(new_point, mulMatrix)

@@ -1,7 +1,6 @@
 from tkinter import StringVar
 from tkinter.filedialog import askopenfilename
 
-
 class FileManager():
 
     def openFile(self):
