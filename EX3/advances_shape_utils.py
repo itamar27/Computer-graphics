@@ -19,11 +19,16 @@ class Data:
         self.setVisiblity()
 
     def sortPolygons(self):
-        # self.polygons.sort(key=lambda poly: poly.depth, reverse=True)
+        for poly in self.polygons:
+            poly.setZIndex()
+            
         self.polygons.sort(key=lambda poly: poly.zIndex, reverse=True)
+
+
 
     def getPolygons(self,type_projection):
         polygons = []
+        self.sortPolygons()
         if type_projection == 'Orthographic':
             for poly in self.polygons:
                 if poly.visible:
@@ -49,32 +54,8 @@ class Data:
         self.setVisiblity()
 
     def setVisiblity(self):
-        values = self.polygons[0].minMaxValues()
-        xMax = values[1]
-        yMax = values[3]
-        zMax = values[5]
-        xMin = values[0]
-        yMin = values[2]
-        zMin = values[4]
-        for poly in self.polygons[1::]:
-            values = poly.minMaxValues()
-            if values[0] < xMin:
-                xMin = values[0]
-            if values[1] > xMax:
-                xMax = values[1]
-            if values[2] < yMin:
-                yMin = values[2]
-            if values[3] > yMax:
-                yMax = values[3]
-            if values[4] < zMin:
-                zMin = values[4]
-            if values[5] > zMax:
-                zMax = values[5]
-
-        viewNormal = [(xMax-xMin)/2,(yMax-yMin)/2,(zMax-zMin)/2]
-
         for poly in self.polygons:
-            poly.setVisible(viewNormal)
+            poly.setVisible()
 
 
 class Polygon:
@@ -94,13 +75,23 @@ class Polygon:
     def __str__(self):
         return "Coords = {}\nzValues = {}\nColor = {}\nNoraml = {}\n".format(self.coords, self.zIndex, self.color,self.normal)
 
-    def setVisible(self,viewVector):
-        vis = np.multiply(viewVector,self.normal)
+    def setZIndex(self):
+        self.zIndex = self.coords[0][2]
+        for cord in self.coords[1:]:
+            if cord[2] > self.zIndex:
+                self.zIndex = cord[2]
+
+
+    def setVisible(self):
+        self.surface_normal()
+        viewVector = [0,0,-1000]
+        tmp = np.subtract(self.coords[0], viewVector)
+        vis = np.dot(tmp, self.normal)
+
         if(vis <= 0):
             self.visible = False
         else:
             self.visible = True
-        print(self.visible)
 
     def surface_normal(self):
         n1 = []
@@ -116,8 +107,7 @@ class Polygon:
         n2.append(self.coords[2][1] - self.coords[1][1])
         n2.append(self.coords[2][2] - self.coords[1][2])
 
-        print(n1)
-        self.normal = np.dot(n1,n2)
+        self.normal = np.cross(n1,n2)
 
     def orthographicCoords(self):
         ''' Return orthographic coordinates for 3d projects (for each polygon)'''
@@ -158,7 +148,7 @@ class Polygon:
         ''' Return perspective coordinates for 3d projects (for each polygon), where the distance is set to 350'''
         coordsPerspective = []
         #Setting the distance variable
-        D = 500
+        D = 1000
 
         for point in self.coords:
             sz = D / (int(point[2]) + D)

@@ -24,7 +24,7 @@ class GUI:
     helv36 = tkFont.Font(family='Helvetica', size=10, weight='bold')
     type_projection = 'Oblique'
 
-    menuTop = Frame(window)
+    menuTop = Frame(window, bg="SkyBlue3")
     menuHelp = Menu(window)
     window.config(menu=menuHelp)
 
@@ -51,13 +51,13 @@ class GUI:
         zoomOutBtn = Button(self.window, text="Zoom out", command=lambda: self.scale("out"),
                             height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
-        rotateBtnX = Button(self.window, text="Rotate X",command=lambda:self.popUpRotate("x"),
+        rotateBtnX = Button(self.window, text="Rotate X",command=lambda: self.rotation("x", angle),
                            height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
-        rotateBtnY = Button(self.window, text="Rotate Y",command=lambda:self.popUpRotate("y"),
+        rotateBtnY = Button(self.window, text="Rotate Y",command=lambda:self.rotation("y", angle),
                             height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
-        rotateBtnZ = Button(self.window, text="Rotate Z",command=lambda:self.popUpRotate("z"),
+        rotateBtnZ = Button(self.window, text="Rotate Z",command=lambda: self.rotation("z", angle),
                             height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
         clearBtn = Button(self.window, text="Clear Screen",  command=self.clearCanvas,
@@ -66,6 +66,9 @@ class GUI:
         self.msgText = Label(self.window, height=9, width=20, bg="white")
 
         # top buttons
+        rotateLabel = Label(self.menuTop,text="Rotation degree(default=15):", bg='SkyBlue3', height=3, font=self.helv36)
+        angle = Entry(self.menuTop)
+
         color_button = Button(self.menuTop, text='Select Color',command=self.choose_color,
                               height=2, width=15, bg='SkyBlue4', fg='white', font=self.helv36)
 
@@ -89,9 +92,9 @@ class GUI:
         rotateBtnZ.pack(side=TOP)
         clearBtn.pack(side=TOP)
 
-        # helpBtn.pack(side=TOP)
-
         # packing menu top
+        rotateLabel.pack(side=LEFT)
+        angle.pack(side=LEFT, padx=15)
         color_button.pack(side=LEFT)
         orthographic_btn.pack(side=LEFT)
         oblique_btn.pack(side=LEFT)
@@ -159,30 +162,11 @@ class GUI:
         self.data.scale(mode)
         self.draw(self.type_projection)
 
-    def popUpRotate(self,direction):
-        '''
-       This function generates input needed for the transformation
-       '''
-        # Toplevel object which will
-        # be treated as a new window
-        newWindow = Toplevel(self.window)
-        newWindow.title("Resize paint")
-
-        # sets the geometry of toplevel
-        newWindow.geometry("200x200")
-
-        # A Label widget to show in toplevel
-        Label(newWindow,text="Please choose rotate degree:").pack()
-
-        angle = Entry(newWindow)
-        angle.pack()
-
-        # Packing a button to the new window
-        Button(newWindow, text="Confirm", command=lambda: self.rotation(direction, angle),
-               height=2, width=10, bg='SkyBlue4', fg='white').pack(side=BOTTOM, pady=15)
-
     def rotation(self, direction,angle):
-        if self.is_number_regex(angle.get()) :
+        if angle.get() == "":
+            self.data.rotation(direction,float(15))
+            self.draw(self.type_projection)
+        elif self.is_number_regex(angle.get()) :
             self.data.rotation(direction,float(angle.get()))
             self.draw(self.type_projection)
         else:
