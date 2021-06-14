@@ -59,7 +59,7 @@ class GUI:
         rotateBtnZ = Button(self.window, text="Rotate Z",command=lambda:self.popUpRotate("z"),
                             height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
-        clearBtn = Button(self.window, text="Clear Screen",  command=lambda: self.canvas.delete('all'),
+        clearBtn = Button(self.window, text="Clear Screen",  command=lambda: self.clearCanvas,
                           height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
         self.msgText = Label(self.window, height=9, width=20, bg="white")
@@ -97,6 +97,11 @@ class GUI:
         perspective_btn.pack(side=LEFT)
 
         self.msgText.pack(side=TOP, pady=10)
+
+    def clearCanvas(canvas):
+        showMsg("All clear! Let's start again.")
+
+        canvas.delete("all")
 
     def about_command(self):
         showinfo("Window", " 3D transforemations \n\n This program was written by: \n Sivan salzmann - 207056334 \n Itamer Yarden - 204289987 \n Barak Daniel - 204594329 \n")

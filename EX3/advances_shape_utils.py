@@ -1,8 +1,9 @@
 import math
 from tkinter.constants import TRUE
-
 import mpmath
 import numpy as np
+from errorManager import showMsg
+
 
 class Data:
     

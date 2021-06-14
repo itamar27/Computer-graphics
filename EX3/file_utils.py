@@ -1,5 +1,6 @@
 from tkinter import StringVar
 from tkinter.filedialog import askopenfilename
+from errorManager import showMsg
 
 class FileManager():
 
@@ -12,7 +13,7 @@ class FileManager():
         folder_path.set(filename)
         return self.readFile(filename)
 
-    def  readFile(self, name):
+    def readFile(self, name):
         '''
         Read file data inorder to get the coordinate and polygons location on  screen
         '''
@@ -36,6 +37,9 @@ class FileManager():
                     if len(line) > 1:
                         poly = line[1].split(",")
                         polygons.append([int(x)-1 for x in poly])
+                else:
+                    showMsg("File input is invalid please enter another file!")
+                    return
 
         return coords, polygons
         
