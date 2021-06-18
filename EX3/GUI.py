@@ -22,7 +22,7 @@ class GUI:
     window.configure(background='SkyBlue3')
     canvas = Canvas(window, width=width-200, height=height, bg="white")
     helv36 = tkFont.Font(family='Helvetica', size=10, weight='bold')
-    type_projection = 'Oblique'
+    type_projection = 'Orthographic'
 
     menuTop = Frame(window, bg="SkyBlue3")
     menuHelp = Menu(window)
@@ -63,6 +63,9 @@ class GUI:
         clearBtn = Button(self.window, text="Clear Screen",  command=self.clearCanvas,
                           height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
+        closeBtn = Button(self.window, text="Close Screen",  command=self.closeProg,
+                          height=4, width=30, bg='SkyBlue4', fg='white', font=self.helv36)
+
         self.msgText = Label(self.window, height=9, width=20, bg="white")
 
         # top buttons
@@ -70,7 +73,7 @@ class GUI:
         angle = Entry(self.menuTop)
 
         color_button = Button(self.menuTop, text='Select Color',command=self.choose_color,
-                              height=2, width=15, bg='SkyBlue4', fg='white', font=self.helv36)
+                              height=2, width=15, bg='SkyBlue3', fg='white', font=self.helv36)
 
         orthographic_btn = Button(self.menuTop, text="Orthographic",  command=lambda: self.draw("Orthographic"),
                                   height=2, width=15, bg='SkyBlue2', fg='white', font=self.helv36)
@@ -91,6 +94,7 @@ class GUI:
         rotateBtnY.pack(side=TOP)
         rotateBtnZ.pack(side=TOP)
         clearBtn.pack(side=TOP)
+        closeBtn.pack(side=TOP)
 
         # packing menu top
         rotateLabel.pack(side=LEFT)
@@ -107,6 +111,12 @@ class GUI:
         self.canvas.delete("all")
         self.data = None
         showMsg("All clear! Let's start again.")
+    
+    def closeProg(self):
+        self.window.destroy()
+        self.window = 0
+        self.canvas = 0
+
 
     def about_command(self):
         showinfo("Window", " 3D transforemations \n\n This program was written by: \n Sivan salzmann - 207056334 \n Itamer Yarden - 204289987 \n Barak Daniel - 204594329 \n")
@@ -150,7 +160,7 @@ class GUI:
                 cord.append(int(p[0] + width_mid))
                 cord.append(int(p[1] + height_mid))
                 poly[i] = tuple(cord)
-            self.canvas.create_polygon(poly, fill=self.color, width= 2,outline='#ffffff')
+            self.canvas.create_polygon(poly, fill="#ffffff", width= 2,outline=self.color)
             self.presentMessage("Projection type:\n{}\n".format(type_projection))
 
     def is_number_regex(self,s):

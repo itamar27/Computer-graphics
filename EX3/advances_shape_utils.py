@@ -85,8 +85,8 @@ class Polygon:
 
 
     def setVisible(self):
-        ''' Check if vis<=0 the visible is invisible,
-        and the opposite if vis>0 '''
+        ''' Check if vis <= 0 the visible is invisible,
+        and the opposite if vis > 0 '''
         self.surface_normal()
         viewVector = [0,0,-1000]
         tmp = np.subtract(self.coords[0], viewVector)
