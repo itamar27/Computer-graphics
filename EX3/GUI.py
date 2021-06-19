@@ -124,7 +124,7 @@ class GUI:
         showinfo("About", " 3D transforemations \n\n This program was written by: \n Sivan salzmann - 207056334 \n Itamer Yarden - 204289987 \n Barak Daniel - 204594329 \n")
 
     def help_command(self):
-        showinfo("Help", "Welcome to Project-3D software! \n\n For using our interface you must follow these steps:\n\n1. You need to open a coordinate file, we have provided you with the polygons.txt file and it is recommended to use it!\n\n2. After opening the file, you must select the desired dump or use the default dump we provided you.\n\n3. You can choose to make transformations:\nZoom in\nZoom out\nRotation X\nRotation Y\nRotation Z\n\n4. You have the option to choose to change the fill color of the shapes from black to any color you want!\n\n5. You can quickly delete all information from the screen and restart at any time by clicking Clear screen.\n\n6. To exit the program, click Quite.\n\nhave a nice time!")
+        showinfo("Help", "Welcome to our Project-3D software! \n\n For using our interface you must follow these steps:\n\n1. You need to open a coordinate file, we have provided you with the polygons.txt file and it is recommended to use it!\n\n2. After opening the file, you must select the desired projection or use the default projection we provided you.\n\n3. You can choose to make transformations:\nZoom in\nZoom out\nRotation X\nRotation Y\nRotation Z\n\n4. You have the option to choose to change the fill color of the shapes from black to any color you want by clicking select color.\n\n5. You can quickly delete all information from the screen and restart at any time by clicking Clear screen.\n\n6. To exit the program, click Quite.\n\nhave a nice time!")
 
     # Color picker
     def choose_color(self):
