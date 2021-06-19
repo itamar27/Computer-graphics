@@ -1,6 +1,11 @@
+###
+# Students name:
+# Sivan Salzmann - 207056334
+# Barak Daniel - 204594329
+# Itamer Yarden - 204289987
+###
 import math
 import numpy as np
-from errorManager import showMsg
 
 class Data:
     
@@ -78,6 +83,8 @@ class Polygon:
         self.visible = False
 
     def setZIndex(self):
+        ''' This function change the z index of polygon to
+            the max value between all the z value in'''
         self.zIndex = self.coords[0][2]
         for cord in self.coords[1:]:
             if cord[2] > self.zIndex:

@@ -1,3 +1,9 @@
+###
+# Students name:
+# Sivan Salzmann - 207056334
+# Barak Daniel - 204594329
+# Itamer Yarden - 204289987
+###
 from tkinter import *
 from tkinter import font as tkFont, colorchooser
 
@@ -7,12 +13,10 @@ from file_utils import FileManager
 from advances_shape_utils import *
 from errorManager import showMsg
 
-
 class GUI:
-
     # Logical class variables
-
     # UI elements
+
     width = 1200
     height = 800
     color = '#000000'
@@ -28,8 +32,6 @@ class GUI:
     menuHelp = Menu(window)
     window.config(menu=menuHelp)
 
-
-
     def __init__(self):
         '''
         Initial GuI and logical elements of the program
@@ -40,8 +42,7 @@ class GUI:
         helpmenu.add_command(label="About",command=self.about_command)
         helpmenu.add_command(label="User guide",command=self.help_command)
 
-
-    # create  graphical interface elements
+        # create  graphical interface elements
         fileBtn = Button(self.window, text="Open file",  command=self.openFile,
                          height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
@@ -63,7 +64,7 @@ class GUI:
         clearBtn = Button(self.window, text="Clear Screen",  command=self.clearCanvas,
                           height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
-        closeBtn = Button(self.window, text="Close Screen",  command=self.closeProg,
+        closeBtn = Button(self.window, text="Quite",  command=self.closeProg,
                           height=4, width=30, bg='SkyBlue4', fg='white', font=self.helv36)
 
         self.msgText = Label(self.window, height=9, width=20, bg="white")
@@ -113,16 +114,17 @@ class GUI:
         showMsg("All clear! Let's start again.")
     
     def closeProg(self):
+        ''' Close the program button '''
         self.window.destroy()
         self.window = 0
         self.canvas = 0
 
 
     def about_command(self):
-        showinfo("Window", " 3D transforemations \n\n This program was written by: \n Sivan salzmann - 207056334 \n Itamer Yarden - 204289987 \n Barak Daniel - 204594329 \n")
+        showinfo("About", " 3D transforemations \n\n This program was written by: \n Sivan salzmann - 207056334 \n Itamer Yarden - 204289987 \n Barak Daniel - 204594329 \n")
 
     def help_command(self):
-        showinfo("Window", "Help window")
+        showinfo("Help", "Welcome to Project-3D software! \n\n For using our interface you must follow these steps:\n\n1. You need to open a coordinate file, we have provided you with the polygons.txt file and it is recommended to use it!\n\n2. After opening the file, you must select the desired dump or use the default dump we provided you.\n\n3. You can choose to make transformations:\nZoom in\nZoom out\nRotation X\nRotation Y\nRotation Z\n\n4. You have the option to choose to change the fill color of the shapes from black to any color you want!\n\n5. You can quickly delete all information from the screen and restart at any time by clicking Clear screen.\n\n6. To exit the program, click Quite.\n\nhave a nice time!")
 
     # Color picker
     def choose_color(self):
@@ -136,6 +138,8 @@ class GUI:
         self.window = mainloop()
 
     def openFile(self):
+        ''' This function open the file in the gui and set the daata into Data
+            object. After it all set the data will draw on the screen.'''
         coords, polygons = FileManager().openFile()
         if coords == [] or polygons == []:
             showMsg("File input is invalid please enter another file!")
@@ -144,6 +148,9 @@ class GUI:
         self.draw(self.type_projection)
 
     def draw(self, type_projection):
+        ''' Draw the data on the screen after the window is clear
+            the sizes of the window is affect on the polygons state
+            on the screen. '''
         self.canvas.delete('all')
         self.type_projection = type_projection
         if self.data == None:
@@ -160,7 +167,8 @@ class GUI:
                 cord.append(int(p[0] + width_mid))
                 cord.append(int(p[1] + height_mid))
                 poly[i] = tuple(cord)
-            self.canvas.create_polygon(poly, fill="#ffffff", width= 2,outline=self.color)
+            # create each polygon. fill the polygon by user choosing color.
+            self.canvas.create_polygon(poly, fill=self.color, width= 2,outline="#ffffff")
             self.presentMessage("Projection type:\n{}\n".format(type_projection))
 
     def is_number_regex(self,s):
@@ -170,6 +178,7 @@ class GUI:
         return True
 
     def scale(self, mode):
+        ''' Scale transformation '''
         if self.data == None:
             showMsg("Please open file first!")
             return
@@ -177,6 +186,7 @@ class GUI:
         self.draw(self.type_projection)
 
     def rotation(self, direction,angle):
+        ''' Rotation transformation '''
         if self.data == None:
             showMsg("Please open file first!")
             return

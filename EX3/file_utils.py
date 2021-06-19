@@ -1,6 +1,11 @@
+###
+# Students name:
+# Sivan Salzmann - 207056334
+# Barak Daniel - 204594329
+# Itamer Yarden - 204289987
+###
 from tkinter import StringVar
 from tkinter.filedialog import askopenfilename
-from errorManager import showMsg
 
 class FileManager():
 

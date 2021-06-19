@@ -4,9 +4,9 @@
 # Barak Daniel - 204594329
 # Itamer Yarden - 204289987
 ###
-### This module is responsible for all the errors and thier pop on the UI window/
-
 from tkinter import messagebox
+
+''' This module is responsible for all the errors and thier pop on the UI window '''
 
 def showMsg(msg):
     '''
