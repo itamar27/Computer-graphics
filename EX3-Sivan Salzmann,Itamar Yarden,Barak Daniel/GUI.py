@@ -64,7 +64,7 @@ class GUI:
         clearBtn = Button(self.window, text="Clear Screen",  command=self.clearCanvas,
                           height=4, width=30, bg='SkyBlue2', fg='white', font=self.helv36)
 
-        closeBtn = Button(self.window, text="Quit",  command=self.closeProg,
+        closeBtn = Button(self.window, text="Quite",  command=self.closeProg,
                           height=4, width=30, bg='SkyBlue4', fg='white', font=self.helv36)
 
         self.msgText = Label(self.window, height=9, width=20, bg="white")
